@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="it" data-generator="verso-slides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lezione 1 - Che cos&#x27;è un interactive theorem prover?</title>
+<style>
+
+:root {
+  --ink: #111827;
+  --muted: #536170;
+  --paper: #f7f9fb;
+  --panel: #ffffff;
+  --lean-blue: #0b5cad;
+  --lean-cyan: #00a6c8;
+  --lean-green: #13a05f;
+  --line: #d8e0e8;
+  --code: #f4f7fb;
+  --shadow: rgba(15, 23, 42, .12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, var(--lean-blue) 0 10px, transparent 10px),
+    radial-gradient(circle at 90% 10%, rgba(0,166,200,.10), transparent 32rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+a { color: var(--lean-blue); font-weight: 650; }
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+section.slide {
+  position: relative;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6vh 8vw 7vh calc(8vw + 10px);
+  border-bottom: 1px solid var(--line);
+}
+section.slide.title {
+  background:
+    linear-gradient(135deg, rgba(11,92,173,.96), rgba(0,166,200,.88)),
+    var(--lean-blue);
+  color: white;
+}
+section.slide.title h1,
+section.slide.title h2 { color: white; max-width: 980px; }
+section.slide.title .kicker,
+section.slide.title .note { color: rgba(255,255,255,.84); }
+section.slide:not(.title)::before {
+  content: "Lean 4";
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  color: var(--lean-blue);
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+h1, h2, h3 {
+  margin: 0 0 .45rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+h1, h2 {
+  max-width: 1120px;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  color: var(--lean-blue);
+}
+h3 { font-size: clamp(1.35rem, 2vw, 2.1rem); }
+p, li, td, th { font-size: clamp(1.18rem, 1.7vw, 1.7rem); }
+p { max-width: 1060px; margin: .25rem 0; }
+ul { max-width: 1080px; padding-left: 1.2em; margin: .35rem 0; }
+li { margin: .35rem 0; }
+table {
+  border-collapse: collapse;
+  max-width: 1120px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: .7rem .9rem;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--lean-blue);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  text-transform: uppercase;
+}
+pre, .hl.lean {
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--lean-blue);
+  border-radius: 7px;
+  padding: .9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(.78rem, 1vw, 1.02rem);
+  box-shadow: 0 10px 22px rgba(15,23,42,.08);
+}
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+blockquote {
+  max-width: 980px;
+  border-left: 7px solid var(--lean-cyan);
+  margin: .6rem 0;
+  padding: .65rem 0 .65rem 1.2rem;
+  background: rgba(255,255,255,.7);
+}
+.kicker {
+  color: var(--lean-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: clamp(.9rem, 1.1vw, 1.1rem);
+}
+.note, .source { color: var(--muted); font-size: clamp(.88rem, 1.05vw, 1rem); }
+.counter {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1rem;
+  color: var(--muted);
+  font-size: .9rem;
+  z-index: 5;
+}
+.lean-rendered {
+  max-width: 1160px;
+}
+.lean-rendered .hl.lean {
+  display: block;
+  white-space: pre-wrap;
+}
+.tactic-toggle { margin-left: .35rem; }
+.tactic label {
+  cursor: pointer;
+  border-bottom: 2px solid var(--lean-green);
+}
+.tactic-state {
+  display: none;
+  white-space: normal;
+  margin: .7rem 0 0;
+  padding: .8rem;
+  background: var(--panel);
+  border: 1px solid var(--lean-green);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(15,23,42,.10);
+}
+.tactic-toggle:checked + .tactic-state { display: block; }
+.goal + .goal {
+  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .5rem;
+}
+.hypotheses {
+  display: block;
+  margin-bottom: .4rem;
+}
+.hypothesis { display: block; }
+.conclusion {
+  display: block;
+  font-weight: 700;
+}
+.token.keyword { color: #7c3aed; font-weight: 700; }
+.token.const { color: var(--lean-blue); }
+.token.var { color: #2563eb; }
+.token.sort { color: #b45309; }
+@media (max-width: 720px) {
+  section.slide { padding: 5vh 5vw 7vh calc(5vw + 10px); }
+  section.slide:not(.title)::before { display: none; }
+  h1, h2 { font-size: clamp(1.8rem, 10vw, 3rem); }
+}
+@media print {
+  main { height: auto; overflow: visible; scroll-snap-type: none; }
+  section.slide { min-height: auto; break-inside: avoid; }
+  .counter { display: none; }
+}
+
+</style>
+</head>
+<body class="verso-slides">
+<main>
+<section class="slide title" id="1-reasoning-proof-and-formalization-with-lean-4">
+<h2>Reasoning, Proof, and Formalization with Lean 4</h2>
+<p>Lezione 1 - Che cos&#x27;è un interactive theorem prover?</p>
+<p>Stefano M. Nicoletti</p>
+<p>22 giugno 2026</p>
+</section>
+<section class="slide content" id="2-struttura-della-lezione">
+<h2>Struttura della lezione</h2>
+<ul><li>Parte teorica: che cos&#x27;è un interactive theorem prover e perché usarlo.</li><li>Live demo.</li><li>Esercizi.</li></ul>
+</section>
+<section class="slide content" id="3-obiettivo">
+<h2>Obiettivo</h2>
+<p>Capire che cosa significa eseguire una dimostrazione in modo interattivo.</p>
+<ul><li>Che tipo di strumento è Lean?</li><li>Che cosa vede l&#x27;utente durante una dimostrazione interattiva?</li><li>Che cosa fornisce le fondamenta del sistema di dimostrazione?</li></ul>
+</section>
+<section class="slide content" id="4-interactive-theorem-prover">
+<h2>Interactive theorem prover</h2>
+<p>Un interactive theorem prover è un sistema in cui l&#x27;utente costruisce una dimostrazione formale con l&#x27;aiuto di un &quot;ambiente di controllo&quot;.</p>
+<ul><li>L&#x27;utente scrive enunciati, definizioni e passaggi di una dimostrazione.</li><li>Il sistema mostra lo stato corrente della dimostrazione, o <em>proof state</em>.</li><li>Il sistema accetta solo passaggi che rispettano certe regole formali.</li><li>La dimostrazione finale viene validata meccanicamente dal <em>kernel</em> del theorem prover.</li></ul>
+</section>
+<section class="slide content" id="5-interattivo-non-automatico">
+<h2>Interattivo, non automatico</h2>
+<p>Un theorem prover può essere automatico o interattivo. In questo corso ci interessa prima di tutto l&#x27;interazione.</p>
+<ul><li>Non chiediamo al sistema di inventare una dimostrazione al posto nostro.</li><li>Costruiamo una dimostrazione passo dopo passo.</li><li>Osserviamo come cambia lo stato della dimostrazione.</li><li>Impariamo quali assunzioni sono disponibili in ogni passaggio.</li></ul>
+</section>
+<section class="slide content" id="6-lean">
+<h2>Lean</h2>
+<p>Lean è uno specifico interactive theorem prover.</p>
+<ul><li>È anche un linguaggio di programmazione.</li><li>Permette di scrivere definizioni, enunciati e dimostrazioni.</li><li>Integra un ambiente interattivo per seguire lo sviluppo della dimostrazione.</li><li>Verifica formalmente il risultato prodotto.</li></ul>
+<p class="source"><a href="https://lean-lang.org/papers/lean4.pdf">Leonardo de Moura and Sebastian Ullrich, The Lean 4 Theorem Prover and Programming Language</a></p>
+</section>
+<section class="slide content" id="7-oggetti-e-tipi">
+<h2>Oggetti e tipi</h2>
+<p>In Lean ogni oggetto, o <em>termine</em>, ha un tipo.</p>
+<ul><li>Il tipo dice che genere di oggetto stiamo trattando. Ad esempio:</li><li>Oggetti di tipo numerico, come <em>Nat</em>, possono far parte di ragionamenti computazionali.</li><li>Oggetti di tipo proposizionale, come <em>Prop</em>, entrano in ragionamenti su verità e falsità.</li><li>Il tipo orienta ciò che ha senso fare con un oggetto.</li><li>Il rapporto tra termini, tipi, proposizioni e dimostrazioni sarà affrontato nelle prossime lezioni.</li></ul>
+    <p class="source"><a href="https://docs.lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+</section>
+<section class="slide content" id="8-dimostrazioni-interattive">
+<h2>Dimostrazioni interattive</h2>
+<p>In una dimostrazione interattiva:</p>
+<ul><li>Vediamo un obiettivo locale, o <em>goal</em>.</li><li>Vediamo le <em>ipotesi e assunzioni</em> disponibili.</li><li>Vediamo il <em>proof state</em> in quel punto della dimostrazione.</li><li>Ogni passaggio cambia lo stato della dimostrazione, o <em>proof state</em>.</li></ul>
+</section>
+<section class="slide content" id="9-goal">
+<h2>Goal</h2>
+<p>Il <em>goal</em> è ciò che resta da dimostrare in un determinato momento.</p>
+<ul><li>All&#x27;inizio coincide con l&#x27;obiettivo dell&#x27;enunciato.</li><li>Durante la dimostrazione può cambiare.</li><li>Può essere sostituito da goal più semplici.</li><li>La dimostrazione è finita quando non restano goal aperti.</li></ul>
+</section>
+<section class="slide content" id="10-ipotesi-e-assunzioni">
+<h2>Ipotesi e assunzioni</h2>
+<p>Le ipotesi sono le informazioni disponibili nel punto corrente della dimostrazione.</p>
+<ul><li>Alcune ipotesi vengono dall&#x27;enunciato.</li><li>Altre possono essere introdotte durante la dimostrazione.</li><li>Alcune valgono solo localmente.</li><li>Il <em>proof state</em> mostra quali risorse possiamo usare.</li></ul>
+</section>
+<section class="slide content" id="11-tattiche">
+<h2>Tattiche</h2>
+<p>Una <em>tattica</em> è un comando che trasforma il <em>proof state</em>.</p>
+<ul><li>Può introdurre una nuova assunzione.</li><li>Può applicare una regola disponibile.</li><li>Può dividere un problema in casi.</li><li>Può chiudere un goal quando abbiamo esattamente ciò che serve.</li></ul>
+</section>
+<section class="slide content" id="12-perch-usare-lean-argomentazione">
+<h2>Perché usare Lean: argomentazione</h2>
+<p>Un theorem prover costringe a distinguere premesse, passaggi inferenziali e conclusione.</p>
+<ul><li>Le assunzioni devono essere dichiarate.</li><li>La conclusione deve essere formulata esplicitamente.</li><li>Il passaggio dalle premesse alla conclusione può essere verificato.</li><li>Restano fuori accettabilità, rilevanza e interpretazione delle premesse.</li></ul>
+<p class="source"><a href="https://plato.stanford.edu/archives/sum2022/entries/argument/">Stanford Encyclopedia of Philosophy, Argument and Argumentation</a></p>
+</section>
+<section class="slide content" id="13-perch-usare-lean-software-correctness">
+<h2>Perché usare Lean: software correctness</h2>
+<p>Un programma può compilare, passare molti test e violare comunque la specifica del comportamento atteso.</p>
+<ul><li>Possiamo rendere esplicite le specifiche.</li><li>Possiamo verificare proprietà del programma o del modello.</li><li>Possiamo ottenere garanzie più forti dei soli test.</li></ul>
+<p class="source"><a href="https://research.vu.nl/en/courses/logical-verification-4">VU Amsterdam, Logical Verification</a></p>
+</section>
+<section class="slide content" id="14-perch-usare-lean-matematica">
+<h2>Perché usare Lean: matematica</h2>
+<p>Una dimostrazione formalizzata rende verificabile il rapporto tra definizioni, lemmi e conclusione.</p>
+<ul><li>I passaggi vengono verificati rispetto a regole esplicite.</li><li>I risultati possono essere riusati in librerie formali come <code>mathlib</code>.</li><li>La collaborazione tra esperti può generare librerie di matematica verificata.</li></ul>
+<p class="source"><a href="https://arxiv.org/abs/1910.09336">The mathlib Community, The Lean Mathematical Library</a></p>
+</section>
+<section class="slide content" id="15-perch-usare-lean-fisica">
+<h2>Perché usare Lean: fisica</h2>
+<p>In fisica il theorem prover:</p>
+<ul><li>Può rendere esplicite le ipotesi di un modello.</li><li>Può verificare passaggi matematici o logici.</li><li>Può chiarire quali assunzioni fanno parte di una derivazione.</li><li><em>Physlib</em> mostra questa direzione per Lean 4.</li></ul>
+<p class="source"><a href="https://github.com/leanprover-community/physlib">Physlib, physics in Lean 4</a></p>
+</section>
+<section class="slide content" id="16-che-cosa-verifica-lean">
+<h2>Che cosa verifica Lean</h2>
+<p>Lean verifica la correttezza di una costruzione formale/dimostrazione rispetto a un enunciato formalizzato. Ovviamente:</p>
+<ul><li>Non decide se una premessa empirica è vera.</li><li>Non decide se una fonte storica per il nostro argomento è affidabile.</li><li>Non decide se un modello fisico è adeguato a un problema.</li><li>Non decide se la formalizzazione cattura tutto ciò che volevamo dire.</li></ul>
+</section>
+<section class="slide content" id="17-come-fidarsi-di-lean">
+<h2>Come fidarsi di Lean</h2>
+<p>La fiducia in Lean dipende dal modo in cui il sistema è costruito.</p>
+<ul><li>Un <em>kernel</em> minimale verifica i risultati finali.</li><li>Il kernel appartiene alla <em>trusted computing base</em>.</li><li>Il codice aperto permette ispezione, correzione e revisione pubblica.</li><li>La comunità costruisce strumenti indipendenti di controllo e verifica.</li></ul>
+</section>
+<section class="slide content" id="18-kernel-minimale">
+<h2>Kernel minimale</h2>
+<p>L&#x27;idea del kernel minimale è ridurre la parte del sistema di cui dobbiamo fidarci.</p>
+<ul><li>Le tattiche per passare da un <em>proof state</em> all&#x27;altro possono essere complesse.</li><li>L&#x27;interfaccia può essere complessa.</li><li>Le librerie possono essere enormi.</li><li>Ma il risultato finale deve essere validato dal kernel.</li></ul>
+</section>
+<section class="slide content" id="19-collaborative-verification">
+<h2>Collaborative verification</h2>
+<p>La fiducia cresce quando il controllo non dipende da un unico artefatto chiuso.</p>
+<ul><li>Kernel e librerie sono discussi pubblicamente.</li><li>Implementazioni e checker indipendenti possono confrontare i risultati.</li><li>La comunità può individuare bug, assunzioni e punti deboli.</li><li>La verifica stessa diventa un lavoro collaborativo.</li><li>Progetti come <em>Lean4Lean</em> esplorano la verifica del typechecker di Lean in Lean.</li></ul>
+<p class="source"><a href="https://arxiv.org/abs/2403.14064">Mario Carneiro, Lean4Lean: Towards a Verified Typechecker for Lean, in Lean</a></p>
+</section>
+<section class="slide content" id="20-partiamo-dall-argomentazione">
+<h2>Partiamo dall&#x27;argomentazione!</h2>
+<p>Un argomento collega premesse e conclusione attraverso un&#x27;inferenza.</p>
+<ul><li>Le premesse sono ciò da cui partiamo.</li><li>La conclusione è ciò che vogliamo sostenere.</li><li>L&#x27;inferenza è il passaggio dalle premesse alla conclusione.</li></ul>
+<p class="source"><a href="https://ocw.mit.edu/courses/24-241-logic-i-fall-2009/">MIT OpenCourseWare, Logic I</a></p>
+</section>
+<section class="slide content" id="21-un-buon-argomento">
+<h2>Un buon argomento</h2>
+<p>Un buon argomento richiede:</p>
+<table><thead><tr><th>Dimensione</th><th>Domanda</th></tr></thead><tbody><tr><td>Accettabilità</td><td>le premesse sono vere (credibili/difendibili)?</td></tr><tr><td>Validità</td><td>la conclusione segue dalle premesse?</td></tr><tr><td>Soundness/correttezza</td><td>le premesse sono vere/accettabili e l&#x27;inferenza è valida?</td></tr></tbody></table>
+</section>
+<section class="slide content" id="22-validit-e-soundness-correttezza">
+<h2>Validità e soundness/correttezza</h2>
+<p>La validità riguarda la forma del passaggio inferenziale.</p>
+<ul><li>Un argomento può avere premesse vere ma inferenza non valida.</li><li>La correttezza richiede sia buone premesse sia un valido passaggio inferenziale.</li><li>Lean verifica la validità formale del passaggio inferenziale o dello schema di ragionamento.</li></ul>
+</section>
+<section class="slide content" id="23-linguaggio-ordinario-e-forma-logica">
+<h2>Linguaggio ordinario e forma logica</h2>
+<p>Prima di formalizzare bisogna riconoscere alcune forme ricorrenti nel linguaggio ordinario.</p>
+<table><thead><tr><th>Linguaggio ordinario</th><th>Forma logica</th></tr></thead><tbody><tr><td>abbiamo entrambe le informazioni</td><td>E, cioè ∧</td></tr><tr><td>abbiamo almeno una tra due alternative</td><td>O, cioè ∨</td></tr><tr><td>se vale una condizione/ipotesi, allora segue una conseguenza</td><td>IMPLICA, cioè →</td></tr></tbody></table>
+</section>
+<section class="slide content" id="24-installare-lean">
+<h2>Installare Lean</h2>
+<p>Usare VS Code con l&#x27;estensione Lean 4:</p>
+<ul><li>Installare VS Code.</li><li>Installare la Lean 4 VS Code extension.</li><li>Seguire la guida di setup aperta dall&#x27;estensione.</li><li>Aprire la cartella del progetto in VS Code.</li></ul>
+<p class="source"><a href="https://lean-lang.org/install/">Lean official install page</a></p>
+</section>
+<section class="slide content" id="25-live-demo">
+<h2>Live Demo</h2>
+
+</section>
+<section class="slide content" id="26-esercizi">
+<h2>Esercizi</h2>
+
+</section>
+<section class="slide content" id="27-fonti">
+<h2>Fonti</h2>
+<p class="source"><a href="https://lean-lang.org/install/">Lean official install page</a></p>
+    <p class="source"><a href="https://docs.lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+    <p class="source"><a href="https://leanprover.github.io/theorem_proving_in_lean4/dependent_type_theory.html">Theorem Proving in Lean 4, Dependent Type Theory</a></p>
+    <p class="source"><a href="https://lean-lang.org/papers/lean4.pdf">Leonardo de Moura and Sebastian Ullrich, The Lean 4 Theorem Prover and Programming Language</a></p>
+    <p class="source"><a href="https://arxiv.org/abs/2403.14064">Mario Carneiro, Lean4Lean: Towards a Verified Typechecker for Lean, in Lean</a></p>
+    <p class="source"><a href="https://arxiv.org/abs/1910.09336">The mathlib Community, The Lean Mathematical Library</a></p>
+    <p class="source"><a href="https://github.com/leanprover-community/physlib">Physlib, physics in Lean 4</a></p>
+    <p class="source"><a href="https://plato.stanford.edu/archives/sum2022/entries/argument/">Stanford Encyclopedia of Philosophy, Argument and Argumentation</a></p>
+    <p class="source"><a href="https://ocw.mit.edu/courses/24-241-logic-i-fall-2009/">MIT OpenCourseWare, Logic I</a></p>
+    <p class="source"><a href="https://research.vu.nl/en/courses/logical-verification-4">VU Amsterdam, Logical Verification</a></p>
+</section>
+</main>
+<div class="counter"></div>
+<script>
+
+const slides = Array.from(document.querySelectorAll("section.slide"));
+const counter = document.querySelector(".counter");
+const scroller = document.querySelector("main");
+
+function activeIndex() {
+  const y = scroller.scrollTop;
+  let best = 0;
+  let bestDist = Infinity;
+  slides.forEach((slide, i) => {
+    const distance = Math.abs(slide.offsetTop - y);
+    if (distance < bestDist) {
+      best = i;
+      bestDist = distance;
+    }
+  });
+  return best;
+}
+
+function updateCounter() {
+  if (counter) counter.textContent = `${activeIndex() + 1} / ${slides.length}`;
+}
+
+function go(delta) {
+  const index = Math.max(0, Math.min(slides.length - 1, activeIndex() + delta));
+  slides[index].scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  } else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    slides[0].scrollIntoView({ behavior: "smooth" });
+  } else if (event.key === "End") {
+    event.preventDefault();
+    slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+scroller.addEventListener("scroll", updateCounter);
+updateCounter();
+
+</script>
+</body>
+</html>
