@@ -83,6 +83,9 @@ nav a { margin-right: 1rem; }
 .card span { display: block; margin-top: .6rem; color: var(--muted); }
 .lean-rendered { max-width: 1160px; margin: 1rem 0; }
 .lean-rendered .hl.lean { display: block; white-space: pre-wrap; }
+.lecture-video { margin: 1.5rem 0 2rem; }
+.lecture-video video { display: block; width: 100%; max-height: 70vh; background: #000; border: 1px solid var(--line); border-radius: 6px; }
+.lecture-video figcaption { margin-top: .45rem; color: var(--muted); font-size: .92rem; }
 .tactic-toggle { margin-left: .35rem; }
 .tactic label { cursor: pointer; border-bottom: 2px solid var(--accent); }
 .tactic-state { display: none; white-space: normal; margin: .7rem 0; padding: .8rem; background: #fff; border: 1px solid var(--accent); border-radius: 7px; box-shadow: 0 8px 20px rgb(0 0 0 / .08); }
@@ -112,6 +115,8 @@ nav a { margin-right: 1rem; }
 <nav><a href="../index.html">Home</a><a href="index.html">Indice</a><a href="Lecture01-slides.html">Slide</a><a href="Lecture01-book.pdf">Lecture notes PDF</a><a href="Lecture01-classroom.lean">Lean in classe</a><a href="Lecture01-exercises.lean">Esercizi</a><a href="Lecture01-solutions.lean">Soluzioni</a></nav>
 
 <h1>Lezione 1: Che cos&#x27;è un interactive theorem prover?</h1>
+<h2>Registrazione della lezione</h2>
+<figure class="lecture-video"><video controls preload="metadata" data-hls-src="Corso_Lean_Lezione_01.m3u8"><source src="Corso_Lean_Lezione_01.m3u8" type="application/vnd.apple.mpegurl"><a href="Corso_Lean_Lezione_01.m3u8">Registrazione video della Lezione 1</a></video><figcaption>Registrazione video della Lezione 1</figcaption></figure>
 <h2>1. Scopo della lezione</h2>
 <p>Questa lezione introduce l&#x27;idea generale di interactive theorem prover e poi presenta Lean come uno specifico sistema di questo tipo. L&#x27;obiettivo non è ancora imparare molte tattiche o formalizzare esempi complessi. L&#x27;obiettivo è capire che cosa significa costruire una dimostrazione in modo interattivo, che cosa vede l&#x27;utente durante la costruzione, e perché un sistema come Lean può essere utile per analizzare argomenti, programmi, dimostrazioni matematiche e modelli scientifici.</p>
 <p>La lezione ha tre parti:</p>
@@ -293,6 +298,22 @@ nav a { margin-right: 1rem; }
 </ul>
 
 </main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<script>
+document.querySelectorAll("video[data-hls-src]").forEach(video => {
+  const src = video.getAttribute("data-hls-src");
+  if (!src) return;
+  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = src;
+  } else if (window.Hls && Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(src);
+    hls.attachMedia(video);
+  }
+});
+</script>
 
 </body>
 </html>
