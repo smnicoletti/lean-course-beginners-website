@@ -139,7 +139,7 @@ nav a { margin-right: 1rem; }
 </ul>
 <p>For this first lecture, it is enough to keep one idea fixed: Lean does not check an informal text, but a formal object. If the proof is accepted, the system has checked that the object we constructed has the type required by the statement. But what does this mean?</p>
 <h2>4. Objects and Types</h2>
-<p>In Lean every object, or <em>term</em>, has a type. The type tells us what kind of object we are dealing with and guides what it makes sense to do with it <a class="citation" href="https://leanprover.github.io/theorem_proving_in_lean4/dependent_type_theory.html">Theorem Proving in Lean 4, Dependent Type Theory</a>.</p>
+<p>In Lean every object, or <em>term</em>, has a type. The type tells us what kind of object we are dealing with and guides what it makes sense to do with it <a class="citation" href="https://lean-lang.org/theorem_proving_in_lean4/Dependent-Type-Theory/">Theorem Proving in Lean 4, Dependent Type Theory</a>.</p>
 <p>For example, objects that represent natural numbers, of type <em>Nat</em>, can be used in computational reasoning: we can add, multiply, define recursive functions, or prove arithmetic properties. Objects that represent propositions, of type <em>Prop</em>, instead enter reasoning about truth and falsity.</p>
 <p>The type of an object therefore informs the way Lean can treat it. If we have a numeric object, Lean expects operations and properties appropriate for numbers. The systematic relation between types, terms, propositions, and proofs will be addressed in the next lectures.</p>
 <h2>5. Interactive Proofs</h2>
@@ -174,7 +174,7 @@ nav a { margin-right: 1rem; }
 <p>Of course, this does not solve every problem in argumentation. Lean does not decide whether a premise is acceptable, whether a source is reliable, or whether the formalization really captures the informal argument. But it does check the formal part of the inferential steps.</p>
 <h3>Software Correctness</h3>
 <p>A program can compile, pass many tests, and still violate the intended specification. Tests show that some cases work. A formal proof can instead establish that a desired property holds for all possible executions of a given program.</p>
-<p>Formal verification is relevant when we want stronger guarantees than tests alone can provide: compilers, protocols, critical systems, algorithms, and software infrastructures may require explicit and checkable properties <a class="citation" href="https://research.vu.nl/en/courses/logical-verification-4">VU Amsterdam, Logical Verification</a>.</p>
+<p>Formal verification is relevant when we want stronger guarantees than tests alone can provide: compilers, protocols, critical systems, algorithms, and software infrastructures may require explicit and checkable properties <a class="citation" href="https://github.com/vu-logical-verification/logical_verification_2025">VU Amsterdam, Logical Verification</a>.</p>
 <h3>Mathematics</h3>
 <p>In mathematics, a formalized proof makes the relation between definitions, lemmas, and conclusion checkable. Every step must be justified relative to explicit rules. This does not remove the value of informal mathematical writing, but it adds a layer of mechanical control.</p>
 <p>Lean is especially important because of its mathematical library, <code>mathlib</code>, built collaboratively. Once a result has been formalized, it can be reused by others as part of a library of verified mathematics <a class="citation" href="https://arxiv.org/abs/1910.09336">The mathlib Community, The Lean Mathematical Library</a>.</p>
@@ -287,14 +287,14 @@ nav a { margin-right: 1rem; }
 <ul>
 <li>Lean official install page: <a href="https://lean-lang.org/install/">https://lean-lang.org/install/</a>.</li>
 <li>Jeremy Avigad, Leonardo de Moura, Soonho Kong, Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, chapter &quot;Propositions and Proofs&quot;: <a href="https://docs.lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">https://docs.lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/</a>.</li>
-<li>Jeremy Avigad, Leonardo de Moura, Soonho Kong, Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, chapter &quot;Dependent Type Theory&quot;: <a href="https://leanprover.github.io/theorem_proving_in_lean4/dependent_type_theory.html">https://leanprover.github.io/theorem_proving_in_lean4/dependent_type_theory.html</a>.</li>
+<li>Jeremy Avigad, Leonardo de Moura, Soonho Kong, Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, chapter &quot;Dependent Type Theory&quot;: <a href="https://lean-lang.org/theorem_proving_in_lean4/Dependent-Type-Theory/">https://lean-lang.org/theorem_proving_in_lean4/Dependent-Type-Theory/</a>.</li>
 <li>Leonardo de Moura and Sebastian Ullrich, &quot;The Lean 4 Theorem Prover and Programming Language&quot;: <a href="https://lean-lang.org/papers/lean4.pdf">https://lean-lang.org/papers/lean4.pdf</a>.</li>
 <li>Mario Carneiro, &quot;Lean4Lean: Towards a Verified Typechecker for Lean, in Lean&quot;: <a href="https://arxiv.org/abs/2403.14064">https://arxiv.org/abs/2403.14064</a>.</li>
 <li>The mathlib Community, &quot;The Lean Mathematical Library&quot;: <a href="https://arxiv.org/abs/1910.09336">https://arxiv.org/abs/1910.09336</a>.</li>
 <li>Physlib, physics in Lean 4: <a href="https://github.com/leanprover-community/physlib">https://github.com/leanprover-community/physlib</a>.</li>
 <li>Stanford Encyclopedia of Philosophy, &quot;Argument and Argumentation&quot;: <a href="https://plato.stanford.edu/archives/sum2022/entries/argument/">https://plato.stanford.edu/archives/sum2022/entries/argument/</a>.</li>
 <li>MIT OpenCourseWare, Logic I: <a href="https://ocw.mit.edu/courses/24-241-logic-i-fall-2009/">https://ocw.mit.edu/courses/24-241-logic-i-fall-2009/</a>.</li>
-<li>VU Amsterdam, Logical Verification: <a href="https://research.vu.nl/en/courses/logical-verification-4">https://research.vu.nl/en/courses/logical-verification-4</a>.</li>
+<li>VU Amsterdam, Logical Verification: <a href="https://github.com/vu-logical-verification/logical_verification_2025">https://github.com/vu-logical-verification/logical_verification_2025</a>.</li>
 </ul>
 
 </main>
