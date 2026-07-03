@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="it" data-generator="verso-slides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lezione 2 - Proposizioni, dimostrazioni e regole logiche</title>
+<style>
+
+:root {
+  --ink: #111827;
+  --muted: #536170;
+  --paper: #f7f9fb;
+  --panel: #ffffff;
+  --lean-blue: #0b5cad;
+  --lean-cyan: #00a6c8;
+  --lean-green: #13a05f;
+  --line: #d8e0e8;
+  --code: #f4f7fb;
+  --shadow: rgba(15, 23, 42, .12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, var(--lean-blue) 0 10px, transparent 10px),
+    radial-gradient(circle at 90% 10%, rgba(0,166,200,.10), transparent 32rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+a { color: var(--lean-blue); font-weight: 650; }
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+section.slide {
+  position: relative;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6vh 8vw 7vh calc(8vw + 10px);
+  border-bottom: 1px solid var(--line);
+}
+section.slide.title {
+  background:
+    linear-gradient(135deg, rgba(11,92,173,.96), rgba(0,166,200,.88)),
+    var(--lean-blue);
+  color: white;
+}
+section.slide.title h1,
+section.slide.title h2 { color: white; max-width: 980px; }
+section.slide.title .kicker,
+section.slide.title .note { color: rgba(255,255,255,.84); }
+section.slide:not(.title)::before {
+  content: "Lean 4";
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  color: var(--lean-blue);
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+h1, h2, h3 {
+  margin: 0 0 .45rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+h1, h2 {
+  max-width: 1120px;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  color: var(--lean-blue);
+}
+h3 { font-size: clamp(1.35rem, 2vw, 2.1rem); }
+p, li, td, th { font-size: clamp(1.18rem, 1.7vw, 1.7rem); }
+p { max-width: 1060px; margin: .25rem 0; }
+ul { max-width: 1080px; padding-left: 1.2em; margin: .35rem 0; }
+li { margin: .35rem 0; }
+table {
+  border-collapse: collapse;
+  max-width: 1120px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: .7rem .9rem;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--lean-blue);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  text-transform: uppercase;
+}
+pre, .hl.lean {
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--lean-blue);
+  border-radius: 7px;
+  padding: .9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(.78rem, 1vw, 1.02rem);
+  box-shadow: 0 10px 22px rgba(15,23,42,.08);
+}
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+blockquote {
+  max-width: 980px;
+  border-left: 7px solid var(--lean-cyan);
+  margin: .6rem 0;
+  padding: .65rem 0 .65rem 1.2rem;
+  background: rgba(255,255,255,.7);
+}
+.kicker {
+  color: var(--lean-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: clamp(.9rem, 1.1vw, 1.1rem);
+}
+.note, .source { color: var(--muted); font-size: clamp(.88rem, 1.05vw, 1rem); }
+.counter {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1rem;
+  color: var(--muted);
+  font-size: .9rem;
+  z-index: 5;
+}
+.lean-rendered {
+  max-width: 1160px;
+}
+.lean-rendered .hl.lean {
+  display: block;
+  white-space: pre-wrap;
+}
+.tactic-toggle { margin-left: .35rem; }
+.tactic label {
+  cursor: pointer;
+  border-bottom: 2px solid var(--lean-green);
+}
+.tactic-state {
+  display: none;
+  white-space: normal;
+  margin: .7rem 0 0;
+  padding: .8rem;
+  background: var(--panel);
+  border: 1px solid var(--lean-green);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(15,23,42,.10);
+}
+.tactic-toggle:checked + .tactic-state { display: block; }
+.goal + .goal {
+  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .5rem;
+}
+.hypotheses {
+  display: block;
+  margin-bottom: .4rem;
+}
+.hypothesis { display: block; }
+.conclusion {
+  display: block;
+  font-weight: 700;
+}
+.token.keyword { color: #7c3aed; font-weight: 700; }
+.token.const { color: var(--lean-blue); }
+.token.var { color: #2563eb; }
+.token.sort { color: #b45309; }
+@media (max-width: 720px) {
+  section.slide { padding: 5vh 5vw 7vh calc(5vw + 10px); }
+  section.slide:not(.title)::before { display: none; }
+  h1, h2 { font-size: clamp(1.8rem, 10vw, 3rem); }
+}
+@media print {
+  main { height: auto; overflow: visible; scroll-snap-type: none; }
+  section.slide { min-height: auto; break-inside: avoid; }
+  .counter { display: none; }
+}
+
+</style>
+</head>
+<body class="verso-slides">
+<main>
+<section class="slide title" id="1-reasoning-proof-and-formalization-with-lean-4">
+<h2>Reasoning, Proof, and Formalization with Lean 4</h2>
+<p>Lezione 2 - Proposizioni, dimostrazioni e regole logiche</p>
+<p>Stefano M. Nicoletti</p>
+<p>6 luglio 2026</p>
+</section>
+<section class="slide content" id="2-struttura-della-lezione">
+<h2>Struttura della lezione</h2>
+<ul><li>Parte teorica: proposizioni come tipi, regole logiche, approccio costruttivo.</li><li>Live demo.</li><li>Esercizi.</li></ul>
+</section>
+<section class="slide content" id="3-recap-che-cosa-fa-il-kernel">
+<h2>Recap: che cosa fa il kernel</h2>
+<p>Il kernel è la parte del sistema che controlla il risultato finale.</p>
+<ul><li>Le tattiche aiutano a costruire una dimostrazione.</li><li>L&#x27;interfaccia mostra il <em>proof state</em> e guida il lavoro di dimostrazione.</li><li>Le librerie forniscono definizioni e teoremi già verificati.</li><li>Alla fine, il kernel deve verificare che l&#x27;oggetto costruito abbia il tipo richiesto.</li></ul>
+<p class="source"><a href="https://lean-lang.org/papers/lean4.pdf">Leonardo de Moura and Sebastian Ullrich, The Lean 4 Theorem Prover and Programming Language</a></p>
+</section>
+<section class="slide content" id="4-il-ruolo-del-typechecker">
+<h2>Il ruolo del typechecker</h2>
+<p>Lean controlla se un termine ha il tipo atteso.</p>
+<ul><li>Un <em>termine</em> può essere un dato, una funzione, una definizione o una dimostrazione.</li><li>In una dimostrazione, il tipo atteso è la proposizione che vogliamo dimostrare.</li><li>Un teorema viene accettato quando Lean può controllare (nel senso di <em>type check</em>) il termine di dimostrazione rispetto all&#x27;enunciato.</li><li>Per il typechecker, dimostrare un teorema vuol dire aver costruito con successo un termine ben tipato.</li></ul>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+</section>
+<section class="slide content" id="5-proposizioni-come-tipi">
+<h2>Proposizioni come tipi</h2>
+<p>In Lean una proposizione è un oggetto di tipo <code>Prop</code>.</p>
+<ul><li><code>P : Prop</code> dice che <code>P</code> è una proposizione.</li><li>Una dimostrazione di <code>P</code> è un termine che <em>abita</em> il tipo <code>P</code>.</li><li>Scrivere <code>hP : P</code> - ad esempio tra le assunzioni - significa avere una dimostrazione di <code>P</code>.</li><li>Dimostrare <code>P</code> significa dunque costruire un termine del tipo giusto.</li></ul>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+</section>
+<section class="slide content" id="6-in-lean-dimostrare-costruire">
+<h2>In Lean, dimostrare è costruire</h2>
+<p>L&#x27;implicazione <code>P → Q</code> si comporta come una funzione da dimostrazioni di <code>P</code> a dimostrazioni di <code>Q</code>.</p>
+<ul><li>Abbiamo visto che un&#x27;assunzione è un input temporaneo disponibile nel contesto di dimostrazione.</li><li>Applicare un&#x27;implicazione significa applicare una funzione.</li><li>Da <code>hPQ : P → Q</code> e <code>hP : P</code> otteniamo una dimostrazione di <code>Q</code>.</li><li>Il proof state mostra quali input abbiamo e quale output dobbiamo <em>costruire</em>.</li></ul>
+</section>
+<section class="slide content" id="7-connettivi-logici-in-lean">
+<h2>Connettivi logici in Lean</h2>
+<p>I connettivi logici sono dunque <em>costruttori</em> di proposizioni.</p>
+<table><thead><tr><th>Notazione</th><th>Lettura</th></tr></thead><tbody><tr><td>P ∧ Q</td><td>P e Q</td></tr><tr><td>P ∨ Q</td><td>P oppure Q</td></tr><tr><td>P → Q</td><td>se P, allora Q</td></tr><tr><td>¬P</td><td>negazione di P</td></tr><tr><td>P ↔ Q</td><td>P se e solo se Q</td></tr><tr><td>False</td><td>contraddizione</td></tr></tbody></table>
+</section>
+<section class="slide content" id="8-regole-di-introduzione-ed-eliminazione">
+<h2>Regole di introduzione ed eliminazione</h2>
+<p>Per ogni connettivo distinguiamo due domande.</p>
+<ul><li>Regola di introduzione: come costruisco una dimostrazione di questa proposizione composta?</li><li>Regola di eliminazione: come uso una dimostrazione di questa proposizione composta per avere le sue componenti elementari?</li><li>Nel live demo osserveremo queste due domande direttamente nel proof state.</li></ul>
+</section>
+<section class="slide content" id="9-implicazione-p-q">
+<h2>Implicazione: P → Q</h2>
+<p>Una implicazione trasforma dimostrazioni di <code>P</code> in dimostrazioni di <code>Q</code>.</p>
+<ul><li>Per introdurre <code>P → Q</code>, assumiamo temporaneamente <code>P</code> e facciamo vedere come costruire <code>Q</code>.</li><li>Per eliminare <code>P → Q</code>, la applichiamo a una dimostrazione di <code>P</code>.</li><li>Questo è di nuovo il modus ponens: da <code>P → Q</code> e <code>P</code> otteniamo <code>Q</code>.</li></ul>
+</section>
+<section class="slide content" id="10-congiunzione-p-q">
+<h2>Congiunzione: P ∧ Q</h2>
+<p>Una congiunzione contiene entrambe le informazioni.</p>
+<ul><li>Per introdurre <code>P ∧ Q</code>, dobbiamo costruire sia una dimostrazione di <code>P</code> che una dimostrazione di <code>Q</code>.</li><li>Per eliminare <code>P ∧ Q</code>, possiamo selezionare liberamente la parte sinistra oppure la parte destra (uno dei congiunti).</li><li>In Lean questo corrisponde all&#x27;idea di accedere alle due componenti di una dimostrazione composta.</li></ul>
+</section>
+<section class="slide content" id="11-disgiunzione-p-q">
+<h2>Disgiunzione: P ∨ Q</h2>
+<p>Una disgiunzione contiene una delle due informazioni.</p>
+<ul><li>Per introdurre <code>P ∨ Q</code>, basta costruire una dimostrazione di uno dei due disgiunti.</li><li>Per eliminare <code>P ∨ Q</code>, dobbiamo necessariamente ragionare per casi.</li><li>In entrambi - nel caso <code>P</code> e nel caso <code>Q</code> - dobbiamo mostrare di poter raggiungere la stessa conclusione.</li><li>Questo è il motivo per cui una disgiunzione produce due rami nella dimostrazione.</li></ul>
+</section>
+<section class="slide content" id="12-negazione-p">
+<h2>Negazione: ¬P</h2>
+<p>In Lean la negazione è definita tramite <code>False</code>.</p>
+<ul><li><code>¬P</code> significa <code>P → False</code>.</li><li>Per dimostrare <code>¬P</code>, assumiamo temporaneamente <code>P</code>...</li><li>... poi dobbiamo derivare una contraddizione.</li><li><code>False</code> rappresenta uno stato contraddittorio: da lì qualunque goal può essere chiuso.</li></ul>
+</section>
+<section class="slide content" id="13-bicondizionale-p-q">
+<h2>Bicondizionale: P ↔ Q</h2>
+<p>Un bicondizionale contiene due implicazioni, una in ciascuna direzione.</p>
+<ul><li>Per introdurre <code>P ↔ Q</code>, dobbiamo costruire sia <code>P → Q</code> che <code>Q → P</code>.</li><li>Per eliminare <code>P ↔ Q</code> da sinistra a destra, usiamo la direzione <code>P → Q</code>.</li><li>Per eliminarlo da destra a sinistra, usiamo la direzione <code>Q → P</code>.</li><li>In Lean queste due direzioni corrispondono a <code>Iff.mp</code> e <code>Iff.mpr</code>.</li></ul>
+</section>
+<section class="slide content" id="14-fondazioni-intuizioniste">
+<h2>Fondazioni intuizioniste</h2>
+<p>La logica di base di Lean è <em>costruttiva</em> (intuizionista). Ovvero:</p>
+<ul><li>Una dimostrazione deve far vedere come <em>costruire</em> l&#x27;oggetto richiesto dal tipo.</li><li>Non basta dire che un&#x27;alternativa sarebbe assurda e dunque concludere il suo contrario: bisogna produrre costruttivamente - passo dopo passo - ciò che il goal richiede.</li></ul>
+</section>
+<section class="slide content" id="15-che-cosa-non-automatico-costruttivamente">
+<h2>Che cosa non è automatico costruttivamente</h2>
+<p>Alcuni principi familiari della matematica classica non sono disponibili automaticamente, se scegliamo un approccio costruttivo.</p>
+<ul><li>Il terzo escluso: <code>P ∨ ¬P</code>.</li><li>L&#x27;eliminazione della doppia negazione: <code>¬¬P → P</code>.</li><li>La dimostrazione per assurdo in forma classica.</li><li>Costruttivamente, escludere <code>¬P</code> non equivale ancora a <em>far vedere come costruire</em> una dimostrazione di <code>P</code>.</li></ul>
+</section>
+<section class="slide content" id="16-un-esempio-la-contrapposizione">
+<h2>Un esempio: la contrapposizione</h2>
+<p>La contrapposizione mette in relazione un&#x27;implicazione e la sua forma negativa: <code>(P → Q) ↔ (¬Q → ¬P)</code>.</p>
+<ul><li>La direzione <code>(P → Q) → (¬Q → ¬P)</code> è costruttiva.</li><li>La direzione <code>(¬Q → ¬P) → (P → Q)</code> richiede ragionamento classico.</li><li>Lo vedremo tra poco nel live demo.</li></ul>
+</section>
+<section class="slide content" id="17-dove-subentra-la-logica-classica">
+<h2>Dove subentra la logica classica</h2>
+<p>Lean permette di usare principi classici in modo esplicito.</p>
+<ul><li><code>Classical.em P</code> fornisce una dimostrazione di <code>P ∨ ¬P</code> e ci permette di usare il terzo escluso.</li><li>Possiamo quindi ragionare per casi su una proposizione arbitraria.</li><li><code>Classical.byContradiction</code> formalizza la dimostrazione per assurdo: da <code>¬P → False</code> concludiamo <code>P</code>.</li></ul>
+</section>
+<section class="slide content" id="18-live-demo">
+<h2>Live demo</h2>
+
+</section>
+<section class="slide content" id="19-fonti">
+<h2>Fonti</h2>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+    <p class="source"><a href="https://lean-lang.org/papers/lean4.pdf">Leonardo de Moura and Sebastian Ullrich, The Lean 4 Theorem Prover and Programming Language</a></p>
+</section>
+</main>
+<div class="counter"></div>
+<script>
+
+const slides = Array.from(document.querySelectorAll("section.slide"));
+const counter = document.querySelector(".counter");
+const scroller = document.querySelector("main");
+
+function activeIndex() {
+  const y = scroller.scrollTop;
+  let best = 0;
+  let bestDist = Infinity;
+  slides.forEach((slide, i) => {
+    const distance = Math.abs(slide.offsetTop - y);
+    if (distance < bestDist) {
+      best = i;
+      bestDist = distance;
+    }
+  });
+  return best;
+}
+
+function updateCounter() {
+  if (counter) counter.textContent = `${activeIndex() + 1} / ${slides.length}`;
+}
+
+function go(delta) {
+  const index = Math.max(0, Math.min(slides.length - 1, activeIndex() + delta));
+  slides[index].scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  } else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    slides[0].scrollIntoView({ behavior: "smooth" });
+  } else if (event.key === "End") {
+    event.preventDefault();
+    slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+scroller.addEventListener("scroll", updateCounter);
+updateCounter();
+
+</script>
+</body>
+</html>
