@@ -193,7 +193,6 @@ theorem lecture02_iff_elim_right (P Q : Prop) :
   -- Regola di eliminazione destra-sinistra: `Iff.mpr` estrae la direzione Q → P.
   exact Iff.mpr hIff hQ
 
-
 -- ============================================================
 -- CONTRAPPOSIZIONE
 -- ============================================================
@@ -257,6 +256,7 @@ theorem lecture02_by_contradiction_classical (P : Prop) :
 -- ============================================================
 -- ESEMPI PIÙ ELABORATI
 -- ============================================================
+
 -- Linguaggio naturale: se abbiamo un'assunzione, se dall'assunzione segue
 -- una conseguenza, e se dalla conseguenza segue una conclusione, allora abbiamo
 -- la conclusione.
