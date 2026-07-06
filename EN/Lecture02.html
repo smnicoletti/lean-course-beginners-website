@@ -143,7 +143,7 @@ hP : P</code></pre>
 <li>The introduction rule explains how to construct a proof of the compound proposition.</li>
 <li>The elimination rule explains how to use a proof of the compound proposition to obtain its components.</li>
 </ul>
-<p>Looking at the goal means asking which introduction rule can construct it. Looking at the assumptions means asking which elimination rule can use them.</p>
+<p>Looking at the goal means asking which introduction rule can construct it. Looking at the assumptions means asking which elimination rule can use them. This terminology follows the standard presentation of natural deduction rules <a class="citation" href="https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html">Logic and Proof, Natural Deduction Rules</a>.</p>
 <h2>5. Implication</h2>
 <p>To introduce <code>P → Q</code>, we temporarily assume <code>P</code> and construct <code>Q</code>.</p>
 <div class="lean-rendered"><code class="hl lean block" data-lean-context="lean"><span class="inter-text">-- Read connectives through their introduction and elimination rules.
@@ -450,6 +450,7 @@ hP : P</code></pre>
 <h2>16. Sources and Further Reading</h2>
 <ul>
 <li>Jeremy Avigad, Leonardo de Moura, Soonho Kong, Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, chapter &quot;Propositions and Proofs&quot;: <a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/</a>.</li>
+<li>Jeremy Avigad, Robert Y. Lewis, Floris van Doorn, <em>Logic and Proof</em>, appendix &quot;Natural Deduction Rules&quot;: <a href="https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html">https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html</a>.</li>
 <li>Leonardo de Moura and Sebastian Ullrich, &quot;The Lean 4 Theorem Prover and Programming Language&quot;: <a href="https://lean-lang.org/papers/lean4.pdf">https://lean-lang.org/papers/lean4.pdf</a>.</li>
 </ul>
 
