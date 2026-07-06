@@ -85,69 +85,6 @@ example (P : Prop) : P → ¬P → False := by
 example (P Q : Prop) : (P → Q) → ¬Q → ¬P := by
   sorry
 
--- Natural language: if I drink coffee then I stay awake; but I do not stay
--- awake; therefore I did not drink coffee.
-example (DrinkCoffee Awake : Prop) :
-    ((DrinkCoffee → Awake) ∧ ¬Awake) → ¬DrinkCoffee := by
-  sorry
-
 end FalseAndNegation
-
-section Biconditional
-
--- Natural language: if we have both directions, then we have a biconditional.
-example (P Q : Prop) : (P → Q) → (Q → P) → (P ↔ Q) := by
-  sorry
-
--- Natural language: from `P ↔ Q` and `P` we can obtain `Q`.
-example (P Q : Prop) : (P ↔ Q) → P → Q := by
-  sorry
-
--- Natural language: from `P ↔ Q` and `Q` we can obtain `P`.
-example (P Q : Prop) : (P ↔ Q) → Q → P := by
-  sorry
-
-end Biconditional
-
-section Classical
-
--- The constructive direction of contraposition.
-example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
-  sorry
-
--- The reverse direction of contraposition requires classical reasoning.
-example (P Q : Prop) : (¬Q → ¬P) → P → Q := by
-  sorry
-
--- Classical proof by contradiction.
-example (P : Prop) : (¬P → False) → P := by
-  sorry
-
-end Classical
-
-section Argumentation
-
--- Natural language: if the form is complete, and if a complete form makes the
--- application admissible, and if an admissible application can be evaluated,
--- then the application can be evaluated.
-example (CompleteForm AdmissibleApplication EvaluableApplication : Prop) :
-    (CompleteForm ∧ (CompleteForm → AdmissibleApplication)) ∧
-      (AdmissibleApplication → EvaluableApplication) →
-    EvaluableApplication := by
-  sorry
-
--- Natural language: if the measurement is precise or the review is approved,
--- and each of the two cases makes the result reliable, and if a reliable
--- result justifies the decision, then the decision is justified.
-example (PreciseMeasurement ApprovedReview ReliableResult
-    JustifiedDecision : Prop) :
-    ((PreciseMeasurement ∨ ApprovedReview) ∧
-      ((PreciseMeasurement → ReliableResult) ∧
-        (ApprovedReview → ReliableResult))) ∧
-    (ReliableResult → JustifiedDecision) →
-    JustifiedDecision := by
-  sorry
-
-end Argumentation
 
 end Course.Shared.Lecture02.EN.Exercises
