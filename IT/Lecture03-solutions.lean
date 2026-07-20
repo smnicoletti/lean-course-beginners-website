@@ -151,22 +151,6 @@ example (NumeroPari DivisibilePerDue : Prop)
 
 end Bicondizionale
 
-section RiduzioneAllAssurdo
-
--- Vogliamo dimostrare che studio, date le assunzioni che, se non studio, non
--- supero l'esame e che supero l'esame. Usiamo la riduzione all'assurdo.
-example (Studio SuperoEsame : Prop)
-    (hNonStudioNonSupero : ¬Studio → ¬SuperoEsame)
-    (hSuperoEsame : SuperoEsame) :
-    Studio := by
-  apply Classical.byContradiction
-  intro hNonStudio
-  have hNonSuperoEsame := hNonStudioNonSupero hNonStudio
-  have hContraddizione := hNonSuperoEsame hSuperoEsame
-  exact hContraddizione
-
-end RiduzioneAllAssurdo
-
 section ArgomentiCompleti
 
 -- Vogliamo dimostrare che esco, date le assunzioni che piove oppure c'è il

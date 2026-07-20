@@ -114,19 +114,6 @@ example (EvenNumber DivisibleByTwo : Prop)
 
 end Biconditional
 
-section ReductioAdAbsurdum
-
-example (Study PassExam : Prop)
-    (hNotStudyNotPass : ¬Study → ¬PassExam) (hPassExam : PassExam) :
-    Study := by
-  apply Classical.byContradiction
-  intro hNotStudy
-  have hNotPassExam := hNotStudyNotPass hNotStudy
-  have hContradiction := hNotPassExam hPassExam
-  exact hContradiction
-
-end ReductioAdAbsurdum
-
 section CompleteArguments
 
 example (Rains Sunny TakeUmbrella WearSunglasses GoOut : Prop)

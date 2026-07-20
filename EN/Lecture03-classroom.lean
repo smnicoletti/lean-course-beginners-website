@@ -181,20 +181,4 @@ theorem lecture03_iff_elim_right
   have hEvenNumber := hDirection hDivisibleByTwo
   exact hEvenNumber
 
--- ============================================================
--- REDUCTIO AD ABSURDUM: CLASSICAL RULE
--- ============================================================
-
--- From `¬A → False`, we classically conclude A.
-theorem lecture03_reductio_ad_absurdum
-    (Rains TakeUmbrella : Prop)
-    (hNotRainsNotUmbrella : ¬Rains → ¬TakeUmbrella)
-    (hTakeUmbrella : TakeUmbrella) :
-    Rains := by
-  apply Classical.byContradiction
-  intro hNotRains
-  have hNotTakeUmbrella := hNotRainsNotUmbrella hNotRains
-  have hContradiction := hNotTakeUmbrella hTakeUmbrella
-  exact hContradiction
-
 end Course.Shared.Lecture03.EN.Classroom

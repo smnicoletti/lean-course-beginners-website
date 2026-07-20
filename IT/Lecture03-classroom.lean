@@ -204,22 +204,4 @@ theorem lecture03_iff_elim_right
   have hNumeroPari := hDirezione hDivisibilePerDue
   exact hNumeroPari
 
--- ============================================================
--- RIDUZIONE ALL'ASSURDO: REGOLA CLASSICA
--- ============================================================
-
--- Da `¬A → False` concludiamo classicamente A.
--- Esempio: se non piove, non prendo l'ombrello; ma prendo l'ombrello;
--- concludiamo classicamente che piove.
-theorem lecture03_reductio_ad_absurdum
-    (Piove PrendoOmbrello : Prop)
-    (hNonPioveNonOmbrello : ¬Piove → ¬PrendoOmbrello)
-    (hPrendoOmbrello : PrendoOmbrello) :
-    Piove := by
-  apply Classical.byContradiction
-  intro hNonPiove
-  have hNonPrendoOmbrello := hNonPioveNonOmbrello hNonPiove
-  have hContraddizione := hNonPrendoOmbrello hPrendoOmbrello
-  exact hContraddizione
-
 end Course.Shared.Lecture03.IT.Classroom

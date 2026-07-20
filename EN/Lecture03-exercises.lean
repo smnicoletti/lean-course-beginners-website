@@ -92,16 +92,6 @@ example (EvenNumber DivisibleByTwo : Prop)
 
 end Biconditional
 
-section ReductioAdAbsurdum
-
--- If not studying implies not passing, but I pass, prove that I study.
-example (Study PassExam : Prop)
-    (hNotStudyNotPass : ¬Study → ¬PassExam) (hPassExam : PassExam) :
-    Study := by
-  sorry
-
-end ReductioAdAbsurdum
-
 section CompleteArguments
 
 -- Whether it rains or is sunny, the appropriate item lets me go out.
