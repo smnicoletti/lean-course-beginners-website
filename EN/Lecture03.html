@@ -139,7 +139,7 @@ nav a { margin-right: 1rem; }
 #check True.intro -- True.intro : True</code></pre></div>
 <p><code>Nat</code> is inhabited, for example, by <code>4</code>. <code>True</code> is also inhabited: <code>True.intro</code> has exactly type <code>True</code>. This observation leads from the general relation between terms and types to the relation between proofs and propositions.</p>
 <h2>3. The Curry-Howard correspondence</h2>
-<p>Under the Curry-Howard correspondence, propositions and types are two ways of describing the same structure. A proposition specifies what must be proved; the corresponding type specifies what kind of term must be built. A proof of the proposition is a term inhabiting that type <a class="citation" href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf">Wadler, Propositions as Types</a>.</p>
+<p>Under the Curry-Howard correspondence, propositions and types are two ways of describing the same structure. A proposition specifies what must be proved; the corresponding type specifies what kind of term must be built. A proof of the proposition is a term inhabiting that type <a class="citation" href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf">Wadler, Propositions as Types</a>.</p>
 <table><thead><tr><th>Logic</th><th>Type theory</th></tr></thead><tbody><tr><td>proposition</td><td>type</td></tr><tr><td>proof</td><td>term</td></tr><tr><td><code>A → B</code></td><td>function from proofs of <code>A</code> to proofs of <code>B</code></td></tr><tr><td>introduction of <code>→</code></td><td>function construction</td></tr><tr><td>elimination of <code>→</code></td><td>function application</td></tr></tbody></table>
 <p>Checking a proof therefore means checking that the constructed term has the declared type. A derivation does not merely certify that a proposition is true: it specifies how to construct its proof <a class="citation" href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a>.</p>
 <h2>4. Natural deduction and the proof state</h2>
@@ -335,7 +335,7 @@ nav a { margin-right: 1rem; }
 <ul>
 <li>Jeremy Avigad, Leonardo de Moura, Soonho Kong, and Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, “Propositions and Proofs”: <a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/</a>.</li>
 <li>Jeremy Avigad, Robert Y. Lewis, and Floris van Doorn, <em>Logic and Proof</em>, “Natural Deduction Rules”: <a href="https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html">https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html</a>.</li>
-<li>Philip Wadler, “Propositions as Types,” <em>Communications of the ACM</em> 58(12), 2015: <a href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf">https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf</a>.</li>
+<li>Philip Wadler, “Propositions as Types,” <em>Communications of the ACM</em> 58(12), 2015: <a href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf">https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf</a>.</li>
 <li>NASA Science, “Io: Facts”: <a href="https://science.nasa.gov/jupiter/jupiter-moons/io/facts/">https://science.nasa.gov/jupiter/jupiter-moons/io/facts/</a>.</li>
 </ul>
 

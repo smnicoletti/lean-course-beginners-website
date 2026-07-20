@@ -122,6 +122,8 @@ nav a { margin-right: 1rem; }
 <nav><a href="../index.html">Home</a><a href="index.html">Indice</a><a href="Lecture03-slides.html">Slide</a><a href="Lecture03-book.pdf">Lecture notes PDF</a><a href="Lecture03-classroom.lean">Lean in classe</a><a href="Lecture03-exercises.lean">Esercizi</a><a href="Lecture03-solutions.lean">Soluzioni</a></nav>
 
 <h1>Lezione 3: Dalla deduzione naturale alle dimostrazioni in Lean</h1>
+<h2>Registrazione della lezione</h2>
+<figure class="lecture-video"><video controls preload="metadata" data-hls-src="Corso_Lean_Lezione_03.m3u8"><source src="Corso_Lean_Lezione_03.m3u8" type="application/vnd.apple.mpegurl"><a href="Corso_Lean_Lezione_03.m3u8">Registrazione video della Lezione 3</a></video><figcaption>Registrazione video della Lezione 3</figcaption></figure>
 <h2>1. Scopo della lezione</h2>
 <p>Nelle lezioni precedenti abbiamo imparato a leggere un proof state e abbiamo usato tattiche come <code>intro</code>, <code>apply</code>, <code>have</code>, <code>exact</code> e <code>cases</code>. In questa lezione colleghiamo quei comandi alle regole della deduzione naturale. Vedremo come le tattiche non siano mosse arbitrarie: costruiscono e usano dimostrazioni secondo la struttura logica delle proposizioni.</p>
 <p>Il percorso della lezione è il seguente:</p>
@@ -141,7 +143,7 @@ nav a { margin-right: 1rem; }
 #check True.intro -- True.intro : True</code></pre></div>
 <p><code>Nat</code> è abitato, per esempio, dal termine <code>4</code>. Anche <code>True</code> è abitato: il termine <code>True.intro</code> ha esattamente tipo <code>True</code>. Questa seconda osservazione ci porta dalle relazioni generiche tra termini e tipi alle relazioni tra dimostrazioni e proposizioni.</p>
 <h2>3. La corrispondenza di Curry-Howard</h2>
-<p>Secondo la corrispondenza di Curry-Howard, proposizioni e tipi possono essere letti come due descrizioni della stessa struttura. Una proposizione indica che cosa deve essere dimostrato, mentre il tipo corrispondente indica quale genere di termine deve essere costruito. Una dimostrazione della proposizione è un termine che abita quel tipo <a class="citation" href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf">Wadler, Propositions as Types</a>.</p>
+<p>Secondo la corrispondenza di Curry-Howard, proposizioni e tipi possono essere letti come due descrizioni della stessa struttura. Una proposizione indica che cosa deve essere dimostrato, mentre il tipo corrispondente indica quale genere di termine deve essere costruito. Una dimostrazione della proposizione è un termine che abita quel tipo <a class="citation" href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf">Wadler, Propositions as Types</a>.</p>
 <p>Ad esempio:</p>
 <table><thead><tr><th>Logica</th><th>Teoria dei tipi</th></tr></thead><tbody><tr><td>proposizione</td><td>tipo</td></tr><tr><td>dimostrazione</td><td>termine</td></tr><tr><td><code>A → B</code></td><td>funzione da dimostrazioni di <code>A</code> a dimostrazioni di <code>B</code></td></tr><tr><td>introduzione di <code>→</code></td><td>costruzione di una funzione</td></tr><tr><td>eliminazione di <code>→</code></td><td>applicazione di una funzione</td></tr></tbody></table>
 <p>Perciò verificare una dimostrazione significa controllare che il termine costruito abbia il tipo dichiarato. Una derivazione non si limita a certificare in modo astratto che una proposizione è vera: specifica come costruirne una dimostrazione <a class="citation" href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a>.</p>
@@ -377,12 +379,27 @@ nav a { margin-right: 1rem; }
 <ul>
 <li>Jeremy Avigad, Leonardo de Moura, Soonho Kong e Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, capitolo «Propositions and Proofs»: <a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/</a>.</li>
 <li>Jeremy Avigad, Robert Y. Lewis e Floris van Doorn, <em>Logic and Proof</em>, «Natural Deduction Rules»: <a href="https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html">https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html</a>.</li>
-<li>Philip Wadler, «Propositions as Types», <em>Communications of the ACM</em> 58(12), 2015: <a href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf">https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf</a>.</li>
+<li>Philip Wadler, «Propositions as Types», <em>Communications of the ACM</em> 58(12), 2015: <a href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf">https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf</a>.</li>
 <li>NASA Science, «Io: Facts»: <a href="https://science.nasa.gov/jupiter/jupiter-moons/io/facts/">https://science.nasa.gov/jupiter/jupiter-moons/io/facts/</a>.</li>
 </ul>
 
 </main>
 
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<script>
+document.querySelectorAll("video[data-hls-src]").forEach(video => {
+  const src = video.getAttribute("data-hls-src");
+  if (!src) return;
+  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = src;
+  } else if (window.Hls && Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(src);
+    hls.attachMedia(video);
+  }
+});
+</script>
 
 </body>
 </html>
