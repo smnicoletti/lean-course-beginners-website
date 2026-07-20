@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="it" data-generator="verso-slides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lezione 3 - Dalla deduzione naturale alle dimostrazioni in Lean</title>
+<style>
+
+:root {
+  --ink: #111827;
+  --muted: #536170;
+  --paper: #f7f9fb;
+  --panel: #ffffff;
+  --lean-blue: #0b5cad;
+  --lean-cyan: #00a6c8;
+  --lean-green: #13a05f;
+  --line: #d8e0e8;
+  --code: #f4f7fb;
+  --shadow: rgba(15, 23, 42, .12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, var(--lean-blue) 0 10px, transparent 10px),
+    radial-gradient(circle at 90% 10%, rgba(0,166,200,.10), transparent 32rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+a { color: var(--lean-blue); font-weight: 650; }
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+section.slide {
+  position: relative;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6vh 8vw 7vh calc(8vw + 10px);
+  border-bottom: 1px solid var(--line);
+}
+section.slide.title {
+  background:
+    linear-gradient(135deg, rgba(11,92,173,.96), rgba(0,166,200,.88)),
+    var(--lean-blue);
+  color: white;
+}
+section.slide.title h1,
+section.slide.title h2 { color: white; max-width: 980px; }
+section.slide.title .kicker,
+section.slide.title .note { color: rgba(255,255,255,.84); }
+section.slide:not(.title)::before {
+  content: "Lean 4";
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  color: var(--lean-blue);
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+h1, h2, h3 {
+  margin: 0 0 .45rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+h1, h2 {
+  max-width: 1120px;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  color: var(--lean-blue);
+}
+h3 { font-size: clamp(1.35rem, 2vw, 2.1rem); }
+p, li, td, th { font-size: clamp(1.18rem, 1.7vw, 1.7rem); }
+p { max-width: 1060px; margin: .25rem 0; }
+ul { max-width: 1080px; padding-left: 1.2em; margin: .35rem 0; }
+li { margin: .35rem 0; }
+table {
+  border-collapse: collapse;
+  max-width: 1120px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: .7rem .9rem;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--lean-blue);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  text-transform: uppercase;
+}
+pre, .hl.lean {
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--lean-blue);
+  border-radius: 7px;
+  padding: .9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(.78rem, 1vw, 1.02rem);
+  box-shadow: 0 10px 22px rgba(15,23,42,.08);
+}
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+blockquote {
+  max-width: 980px;
+  border-left: 7px solid var(--lean-cyan);
+  margin: .6rem 0;
+  padding: .65rem 0 .65rem 1.2rem;
+  background: rgba(255,255,255,.7);
+}
+.kicker {
+  color: var(--lean-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: clamp(.9rem, 1.1vw, 1.1rem);
+}
+.note, .source { color: var(--muted); font-size: clamp(.88rem, 1.05vw, 1rem); }
+.counter {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1rem;
+  color: var(--muted);
+  font-size: .9rem;
+  z-index: 5;
+}
+.lean-rendered {
+  max-width: 1160px;
+}
+.lean-rendered .hl.lean {
+  display: block;
+  white-space: pre-wrap;
+}
+.tactic-toggle { margin-left: .35rem; }
+.tactic label {
+  cursor: pointer;
+  border-bottom: 2px solid var(--lean-green);
+}
+.tactic-state {
+  display: none;
+  white-space: normal;
+  margin: .7rem 0 0;
+  padding: .8rem;
+  background: var(--panel);
+  border: 1px solid var(--lean-green);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(15,23,42,.10);
+}
+.tactic-toggle:checked + .tactic-state { display: block; }
+.goal + .goal {
+  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .5rem;
+}
+.hypotheses {
+  display: block;
+  margin-bottom: .4rem;
+}
+.hypothesis { display: block; }
+.conclusion {
+  display: block;
+  font-weight: 700;
+}
+.token.keyword { color: #7c3aed; font-weight: 700; }
+.token.const { color: var(--lean-blue); }
+.token.var { color: #2563eb; }
+.token.sort { color: #b45309; }
+@media (max-width: 720px) {
+  section.slide { padding: 5vh 5vw 7vh calc(5vw + 10px); }
+  section.slide:not(.title)::before { display: none; }
+  h1, h2 { font-size: clamp(1.8rem, 10vw, 3rem); }
+}
+@media print {
+  main { height: auto; overflow: visible; scroll-snap-type: none; }
+  section.slide { min-height: auto; break-inside: avoid; }
+  .counter { display: none; }
+}
+
+</style>
+</head>
+<body class="verso-slides">
+<main>
+<section class="slide title" id="1-reasoning-proof-and-formalization-with-lean-4">
+<h2>Reasoning, Proof, and Formalization with Lean 4</h2>
+<style>
+    section.slide.content:has(svg) {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        grid-template-rows: auto auto auto auto;
+        column-gap: 1rem;
+        align-content: center;
+        align-items: start;
+    }
+    section.slide.content:has(svg) > h2,
+    section.slide.content:has(svg) > p:first-of-type,
+    section.slide.content:has(svg) > svg {
+        grid-column: 1 / -1;
+    }
+    section.slide.content:has(svg) > p:nth-of-type(2),
+    section.slide.content:has(svg) > p:nth-of-type(3) {
+        margin: 0.8rem 0 0;
+        padding: 0.85rem 1rem;
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        border-radius: 14px;
+        box-shadow: 0 5px 14px rgba(15, 23, 42, 0.06);
+        font-size: 0.82em;
+        line-height: 1.38;
+    }
+    section.slide.content:has(svg) > p:nth-of-type(2) {
+        grid-column: 1;
+        background: #eef6ff;
+        border-left: 6px solid #1565c0;
+    }
+    section.slide.content:has(svg) > p:nth-of-type(3) {
+        grid-column: 2;
+        background: #fff8e8;
+        border-left: 6px solid #d78b00;
+    }
+    @media (max-width: 900px) {
+        section.slide.content:has(svg) {
+            grid-template-columns: 1fr;
+        }
+        section.slide.content:has(svg) > p:nth-of-type(2),
+        section.slide.content:has(svg) > p:nth-of-type(3) {
+            grid-column: 1;
+            font-size: 0.76em;
+        }
+    }
+    </style>
+<p>Lezione 3 - Dalla deduzione naturale alle dimostrazioni in Lean</p>
+<p>Stefano M. Nicoletti</p>
+<p>20 luglio 2026</p>
+</section>
+<section class="slide content" id="2-struttura-della-lezione">
+<h2>Struttura della lezione</h2>
+<ul><li>Tipi e abitazione.</li><li>Deduzione naturale.</li><li>Per ogni regola: forma simbolica, lettura in linguaggio naturale, esempio concreto e dimostrazione Lean.</li></ul>
+</section>
+<section class="slide content" id="3-recap-dal-type-checking-alla-dimostrazione">
+<h2>Recap: dal type checking alla dimostrazione</h2>
+<p>Lean usa lo stesso linguaggio di tipi e termini per programmare e dimostrare.</p>
+<ul><li><code>A : Prop</code>: <code>A</code> è una proposizione.</li><li><code>hA : A</code>: <code>hA</code> è una dimostrazione di <code>A</code>.</li><li>Il kernel accetta la dimostrazione quando il termine costruito ha tipo <code>A</code>.</li><li>Non basta dichiarare che <code>A</code> è vera: quando dimostriamo, dobbiamo fornire un abitante del tipo <code>A</code>.</li></ul>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+</section>
+<section class="slide content" id="4-abitazione-di-un-tipo">
+<h2>Abitazione di un tipo</h2>
+<p>Un tipo è <em>abitato</em> quando esiste almeno un termine di quel tipo.</p>
+<ul><li><code>3 : Nat</code>: il tipo <code>Nat</code> è abitato dal termine <code>3</code>.</li><li><code>hA : A</code>: la proposizione <code>A</code>, vista come tipo, è abitata da una dimostrazione.</li><li>Costruire una dimostrazione significa risolvere un problema di abitazione: trovare (costruttivamente) un termine del tipo richiesto.</li></ul>
+</section>
+<section class="slide content" id="5-un-esempio-dal-mondo-reale">
+<h2>Un esempio dal mondo reale</h2>
+<p>Pensiamo al tipo <code>LunaDiGiove</code>: questo tipo è abitato perché esiste almeno un oggetto che soddisfa questa descrizione.</p>
+<ul><li><code>Io : LunaDiGiove</code>: Io è un abitante del tipo «luna di Giove».</li><li>L&#x27;esistenza di Io basta a mostrare che questo tipo non è vuoto.</li><li>Anche Europa, Ganimede e Callisto sarebbero altri abitanti dello stesso tipo.</li><li>(In Lean dovremmo prima definire formalmente <code>LunaDiGiove</code> e rappresentare Io come un termine di quel tipo.)</li></ul>
+<p class="source"><a href="https://science.nasa.gov/jupiter/jupiter-moons/io/facts/">NASA Science, Io Facts</a></p>
+</section>
+<section class="slide content" id="6-la-corrispondenza-di-curry-howard">
+<h2>La corrispondenza di Curry-Howard</h2>
+<p>La corrispondenza di Curry-Howard identifica due modi di descrivere la stessa struttura: una dimostrazione logica e un programma ben tipato.</p>
+<ul><li>Una proposizione specifica che cosa deve essere costruito; un tipo specifica quali termini possono abitarlo.</li><li>Dimostrare una proposizione significa costruire un termine del tipo corrispondente.</li><li>Verificare una dimostrazione significa controllare che quel termine abbia il tipo dichiarato.</li><li>Le regole logiche corrispondono alle operazioni con cui costruiamo e usiamo termini.</li></ul>
+</section>
+<section class="slide content" id="7-curry-howard-le-corrispondenze">
+<h2>Curry-Howard: le corrispondenze</h2>
+<p>Il parallelismo diventa concreto, e.g., nei connettivi e nelle operazioni di dimostrazione.</p>
+<table><thead><tr><th>Logica</th><th>Teoria dei tipi</th></tr></thead><tbody><tr><td>proposizione</td><td>tipo</td></tr><tr><td>dimostrazione</td><td>termine</td></tr><tr><td>A → B</td><td>funzione da dimostrazioni di A a dimostrazioni di B</td></tr><tr><td>introduzione di →</td><td>astrazione: costruire una funzione</td></tr><tr><td>eliminazione di →</td><td>applicazione di funzione</td></tr></tbody></table>
+<p>Una derivazione certifica che una proposizione è dimostrabile: infatti costruisce un termine che abita il tipo corrispondente.</p>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Theorem Proving in Lean 4, Propositions and Proofs</a></p>
+    <p class="source"><a href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf">Philip Wadler, Propositions as Types</a></p>
+</section>
+<section class="slide content" id="8-che-cos-la-deduzione-naturale">
+<h2>Che cos&#x27;è la deduzione naturale</h2>
+<p>La deduzione naturale presenta una dimostrazione come una sequenza di passi locali governati da regole.</p>
+<ul><li>Ogni regola dice come ottenere una conclusione da alcune premesse.</li><li>Le regole di introduzione dicono come costruire un connettivo nel goal.</li><li>Le regole di eliminazione dicono come usare un connettivo presente nelle assunzioni.</li><li>Alcune dimostrazioni procedono traimte assunzioni temporanee, scaricandole quando la regola lo consente.</li></ul>
+<p class="source"><a href="https://leanprover.github.io/logic_and_proof_lean3/natural_deduction_for_propositional_logic.html">Logic and Proof, Natural Deduction for Propositional Logic</a></p>
+</section>
+<section class="slide content" id="9-la-forma-di-un-giudizio">
+<h2>La forma di un giudizio</h2>
+<p>Scriviamo <code>Γ ⊢ A</code> e leggiamo: «dalle assunzioni in <code>Γ</code> possiamo derivare <code>A</code>».</p>
+<ul><li><code>Γ</code> è il contesto: le assunzioni attualmente disponibili.</li><li><code>A</code> è la conclusione da dimostrare.</li><li>La linea orizzontale di una regola separa le premesse, sopra, dalla conclusione, sotto.</li><li>Nel proof state di Lean, il contesto appare sopra <code>⊢</code> e il goal appare dopo <code>⊢</code>.</li></ul>
+</section>
+<section class="slide content" id="10-implicazione-introduzione-i">
+<h2>Implicazione: introduzione →I</h2>
+<p>Regola:</p>
+<svg viewBox="60 0 280 226" role="img" aria-label="Introduzione dell'implicazione" style="display:block; width:48%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.8.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> per dimostrare <code>A → B</code>, introduciamo l&#x27;assunzione <code>A</code>; arriviamo a una dimostrazione di <code>B</code>; usiamo esattamente questa dimostrazione.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che, se piove e fa freddo, allora piove. Introduciamo l&#x27;assunzione che piova e faccia freddo; abbiamo che piove prendendo la parte sinistra dell&#x27;assunzione; usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="11-implicazione-eliminazione-e">
+<h2>Implicazione: eliminazione →E</h2>
+<p>Regola:</p>
+<svg viewBox="430 0 430 226" role="img" aria-label="Eliminazione dell'implicazione" style="display:block; width:52%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.8.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>A → B</code> e abbiamo <code>A</code>; applichiamo la prima (funzione) alla seconda (dimostrazione); abbiamo <code>B</code> e usiamo esattamente questo fatto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che prendo l&#x27;ombrello, date le assunzioni che, se piove prendo l&#x27;ombrello e che piove. Applichiamo la prima assunzione alla seconda; abbiamo che prendo l&#x27;ombrello e usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="12-congiunzione-introduzione-i">
+<h2>Congiunzione: introduzione ∧I</h2>
+<p>Regola:</p>
+<svg viewBox="70 0 280 75" role="img" aria-label="Introduzione della congiunzione" style="display:block; width:34%; max-height:12vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.9.png" width="1328" height="75"/></svg>
+<p><strong>Schema naturale:</strong> applichiamo il costruttore della congiunzione; abbiamo il caso in cui dobbiamo dimostrare <code>A</code> e usiamo esattamente la sua dimostrazione; abbiamo poi il caso <code>B</code> e usiamo esattamente la sua dimostrazione.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che piove e fa freddo, date le assunzioni che piove e che fa freddo. Applichiamo il costruttore di «piove e fa freddo»; abbiamo il caso «piove» e usiamo esattamente la prima assunzione; abbiamo il caso «fa freddo» e usiamo esattamente la seconda.</p>
+</section>
+<section class="slide content" id="13-congiunzione-eliminazione-sinistra-e">
+<h2>Congiunzione: eliminazione sinistra ∧Eₗ</h2>
+<p>Regola:</p>
+<svg viewBox="410 0 270 75" role="img" aria-label="Eliminazione sinistra della congiunzione" style="display:block; width:33%; max-height:12vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.9.png" width="1328" height="75"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>A ∧ B</code>; abbiamo <code>A</code> prendendo la parte sinistra della congiunzione; usiamo esattamente questo fatto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che piove, data l&#x27;assunzione che piove e fa freddo. Abbiamo che piove prendendo la parte sinistra dell&#x27;assunzione; usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="14-congiunzione-eliminazione-destra-e">
+<h2>Congiunzione: eliminazione destra ∧Eᵣ</h2>
+<p>Regola:</p>
+<svg viewBox="750 0 290 75" role="img" aria-label="Eliminazione destra della congiunzione" style="display:block; width:35%; max-height:12vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.9.png" width="1328" height="75"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>A ∧ B</code>; abbiamo <code>B</code> prendendo la parte destra della congiunzione; usiamo esattamente questo fatto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che fa freddo, data l&#x27;assunzione che piove e fa freddo. Abbiamo che fa freddo prendendo la parte destra dell&#x27;assunzione; usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="15-disgiunzione-introduzione-sinistra-i">
+<h2>Disgiunzione: introduzione sinistra ∨Iₗ</h2>
+<p>Regola:</p>
+<svg viewBox="65 0 270 226" role="img" aria-label="Introduzione sinistra della disgiunzione" style="display:block; width:38%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.11.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> applichiamo il costruttore sinistro della disgiunzione; il goal diventa <code>A</code>; usiamo esattamente la dimostrazione di <code>A</code>.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che piove oppure nevica, data l&#x27;assunzione che piove. Applichiamo il costruttore sinistro di «piove oppure nevica»; il goal diventa «piove»; usiamo esattamente l&#x27;assunzione che piove.</p>
+</section>
+<section class="slide content" id="16-disgiunzione-introduzione-destra-i">
+<h2>Disgiunzione: introduzione destra ∨Iᵣ</h2>
+<p>Regola:</p>
+<svg viewBox="410 0 285 226" role="img" aria-label="Introduzione destra della disgiunzione" style="display:block; width:38%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.11.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> applichiamo il costruttore destro della disgiunzione; il goal diventa <code>B</code>; usiamo esattamente la dimostrazione di <code>B</code>.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che piove oppure nevica, data l&#x27;assunzione che nevica. Applichiamo il costruttore destro di «piove oppure nevica»; il goal diventa «nevica»; usiamo esattamente l&#x27;assunzione che nevica.</p>
+</section>
+<section class="slide content" id="17-disgiunzione-eliminazione-e">
+<h2>Disgiunzione: eliminazione ∨E</h2>
+<p>Regola:</p>
+<svg viewBox="720 0 608 226" role="img" aria-label="Eliminazione della disgiunzione" style="display:block; width:68%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.11.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>A ∨ B</code> e procediamo per casi; abbiamo il caso <code>A</code>, applichiamo <code>A → C</code> e abbiamo <code>C</code>; abbiamo il caso <code>B</code>, applichiamo <code>B → C</code> e abbiamo ancora <code>C</code>; in ciascun caso usiamo esattamente il fatto ottenuto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che prendo l&#x27;ombrello, date le assunzioni che piove oppure nevica, che se piove prendo l&#x27;ombrello e che se nevica prendo l&#x27;ombrello. Procediamo per casi sulla prima assunzione; abbiamo il caso che piove, applichiamo la seconda assunzione e abbiamo che prendo l&#x27;ombrello; abbiamo il caso che nevica, applichiamo la terza assunzione e abbiamo ancora che prendo l&#x27;ombrello; usiamo esattamente il fatto ottenuto in ciascun caso.</p>
+</section>
+<section class="slide content" id="18-negazione-che-cosa-significa">
+<h2>Negazione: che cosa significa</h2>
+<p>In Lean, <code>¬A</code> è definita come <code>A → False</code>.</p>
+<ul><li>Una dimostrazione di <code>¬A</code> è una funzione che trasforma ogni ipotetica dimostrazione di <code>A</code> in una contraddizione.</li><li>Per questo l&#x27;introduzione della negazione ha la stessa struttura dell&#x27;introduzione dell&#x27;implicazione.</li><li>Usare insieme <code>A</code> e <code>¬A</code> produce un termine di tipo <code>False</code>.</li></ul>
+</section>
+<section class="slide content" id="19-negazione-introduzione-i">
+<h2>Negazione: introduzione ¬I</h2>
+<p>Regola:</p>
+<svg viewBox="60 0 290 226" role="img" aria-label="Introduzione della negazione" style="display:block; width:40%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.10.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> introduciamo l&#x27;assunzione <code>A</code>; applichiamo le assunzioni disponibili e abbiamo una contraddizione; usiamo esattamente questa contraddizione per dimostrare <code>¬A</code>.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che non ho bevuto caffè, date le assunzioni che, se bevo caffè, resto sveglio e che non resto sveglio. Introduciamo l&#x27;assunzione che io abbia bevuto caffè; applichiamo la prima assunzione e abbiamo che resto sveglio; applichiamo la seconda assunzione e abbiamo una contraddizione; usiamo esattamente questa contraddizione.</p>
+</section>
+<section class="slide content" id="20-negazione-eliminazione-e">
+<h2>Negazione: eliminazione ¬E</h2>
+<p>Regola:</p>
+<svg viewBox="380 0 430 226" role="img" aria-label="Eliminazione della negazione" style="display:block; width:48%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.10.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>¬A</code> e abbiamo <code>A</code>; applichiamo la prima dimostrazione alla seconda e abbiamo una contraddizione; usiamo esattamente questa contraddizione.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare una contraddizione, date le assunzioni che il laboratorio non è aperto e che è aperto. Applichiamo la prima assunzione alla seconda e abbiamo una contraddizione; usiamo esattamente questa contraddizione.</p>
+</section>
+<section class="slide content" id="21-verit-introduzione-i">
+<h2>Verità: introduzione ⊤I</h2>
+<p>Regola:</p>
+<svg viewBox="315 0 230 75" role="img" aria-label="Introduzione della verità" style="display:block; width:28%; max-height:12vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.12.png" width="1328" height="75"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo il costruttore canonico di <code>True</code>; usiamo esattamente questo costruttore senza applicare alcuna assunzione.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare la proposizione sempre vera. Abbiamo il suo costruttore canonico; usiamo esattamente questo costruttore.</p>
+</section>
+<section class="slide content" id="22-falsit-eliminazione-e">
+<h2>Falsità: eliminazione ⊥E</h2>
+<p>Regola:</p>
+<svg viewBox="70 0 220 75" role="img" aria-label="Eliminazione della falsità" style="display:block; width:28%; max-height:12vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.12.png" width="1328" height="75"/></svg>
+<p><strong>Schema naturale:</strong> applichiamo l&#x27;eliminazione di <code>False</code>; il goal diventa <code>False</code>; usiamo esattamente la contraddizione disponibile.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che piove, data l&#x27;assunzione di una contraddizione. Applichiamo l&#x27;eliminazione di <code>False</code>; il goal diventa una contraddizione; usiamo esattamente quella disponibile.</p>
+</section>
+<section class="slide content" id="23-bicondizionale-introduzione-i">
+<h2>Bicondizionale: introduzione ↔I</h2>
+<p>Regola:</p>
+<svg viewBox="60 0 340 226" role="img" aria-label="Introduzione del bicondizionale" style="display:block; width:46%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.13.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> applichiamo il costruttore del bicondizionale; abbiamo il caso <code>A → B</code>, introduciamo l&#x27;assunzione <code>A</code> e dimostriamo <code>B</code>; abbiamo il caso <code>B → A</code>, introduciamo l&#x27;assunzione <code>B</code> e dimostriamo <code>A</code>.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che «piove e fa freddo» equivale a «fa freddo e piove». Applichiamo il costruttore dell&#x27;equivalenza: dobbiamo dimostrare le due direzioni. Abbiamo il primo caso: supponiamo che piova e faccia freddo e vogliamo dimostrare che fa freddo e piove. Introduciamo questa assunzione; applichiamo il costruttore della congiunzione; usiamo esattamente prima il fatto che fa freddo e poi il fatto che piove. Abbiamo il secondo caso: supponiamo che faccia freddo e piova e vogliamo dimostrare che piove e fa freddo. Introduciamo questa assunzione; applichiamo il costruttore della congiunzione; usiamo esattamente prima il fatto che piove e poi il fatto che fa freddo.</p>
+</section>
+<section class="slide content" id="24-bicondizionale-eliminazione-e">
+<h2>Bicondizionale: eliminazione ↔Eₗ</h2>
+<p>Regola:</p>
+<svg viewBox="420 0 390 226" role="img" aria-label="Eliminazione sinistra del bicondizionale" style="display:block; width:46%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.13.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>A → B</code> applicando l&#x27;eliminazione sinistra-destra al bicondizionale; applichiamo questa direzione ad <code>A</code>; abbiamo <code>B</code> e usiamo esattamente questo fatto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che un numero è divisibile per due, date le assunzioni che essere pari equivale a essere divisibile per due e che il numero è pari. Abbiamo la direzione verso «divisibile per due»; la applichiamo alla seconda assunzione; abbiamo che il numero è divisibile per due e usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="25-bicondizionale-eliminazione-e">
+<h2>Bicondizionale: eliminazione ↔Eᵣ</h2>
+<p>Regola:</p>
+<svg viewBox="870 0 458 226" role="img" aria-label="Eliminazione destra del bicondizionale" style="display:block; width:50%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.13.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> abbiamo <code>B → A</code> applicando l&#x27;eliminazione destra-sinistra al bicondizionale; applichiamo questa direzione a <code>B</code>; abbiamo <code>A</code> e usiamo esattamente questo fatto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che un numero è pari, date le assunzioni che essere pari equivale a essere divisibile per due e che il numero è divisibile per due. Abbiamo la direzione verso «pari»; la applichiamo alla seconda assunzione; abbiamo che il numero è pari e usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="26-regole-costruttive-e-regole-classiche">
+<h2>Regole costruttive e regole classiche</h2>
+<p>Le regole viste fin qui hanno una lettura costruttiva diretta.</p>
+<ul><li>Ogni dimostrazione specifica come costruire il termine richiesto.</li><li>Il terzo escluso <code>A ∨ ¬A</code> non è disponibile automaticamente nella logica costruttiva di base in Lean.</li><li>Neppure l&#x27;eliminazione della doppia negazione <code>¬¬A → A</code> è derivabile costruttivamente.</li><li>Lean permette di aggiungere principi classici in modo locale ed esplicito.</li></ul>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/#classical-logic">Theorem Proving in Lean 4, Classical Logic</a></p>
+</section>
+<section class="slide content" id="27-riduzione-all-assurdo-raa">
+<h2>Riduzione all&#x27;assurdo RAA</h2>
+<p>Regola:</p>
+<svg viewBox="60 0 350 226" role="img" aria-label="Riduzione all'assurdo" style="display:block; width:42%; max-height:18vh;"><image href="https://leanprover.github.io/logic_and_proof_lean3/_static/natural_deduction_for_propositional_logic.14.png" width="1328" height="226"/></svg>
+<p><strong>Schema naturale:</strong> applichiamo la riduzione all&#x27;assurdo; introduciamo l&#x27;assunzione <code>¬A</code>; applichiamo le assunzioni disponibili e abbiamo <code>False</code>; usiamo esattamente questa contraddizione.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che piove, date due assunzioni: se non piove, non prendo l&#x27;ombrello; prendo l&#x27;ombrello. Applichiamo la riduzione all&#x27;assurdo: ora dobbiamo mostrare che supporre che non piova conduce a una contraddizione. Introduciamo quindi l&#x27;assunzione che non piova. Applichiamo la prima assunzione a questo fatto e abbiamo che non prendo l&#x27;ombrello. Ma abbiamo anche la seconda assunzione, secondo cui prendo l&#x27;ombrello. Applichiamo «non prendo l&#x27;ombrello» a «prendo l&#x27;ombrello» e abbiamo una contraddizione. Usiamo esattamente questa contraddizione per concludere la riduzione all&#x27;assurdo.</p>
+</section>
+<section class="slide content" id="28-come-leggere-una-dimostrazione-lean-con-la-deduzione-naturale">
+<h2>Come leggere una dimostrazione Lean, con la deduzione naturale</h2>
+<ul><li><code>intro</code>: introduciamo un&#x27;assunzione richiesta da una regola di introduzione.</li><li><code>exact</code>: usiamo esattamente il termine che abita il goal.</li><li><code>h.left</code> e <code>h.right</code>: eliminiamo una congiunzione selezionando una componente.</li><li><code>Or.inl</code>, <code>Or.inr</code>, <code>cases</code>: introduciamo o eliminiamo una disgiunzione.</li><li>Applicando <code>hAB hA</code> eliminiamo un&#x27;implicazione, cioè usiamo il modus ponens.</li></ul>
+</section>
+<section class="slide content" id="29-strategia-operativa">
+<h2>Strategia operativa</h2>
+<p>Quando guardiamo il proof state, poniamo due domande.</p>
+<ul><li>Qual è il connettivo principale del goal? Questo suggerisce una regola di introduzione.</li><li>Quali assunzioni composte sono nel contesto? Queste suggeriscono regole di eliminazione.</li><li>Quali assunzioni temporanee devo adottare?</li><li>Quale termine devo infine utilizzare per chiudere il goal?</li></ul>
+</section>
+<section class="slide content" id="30-fonti">
+<h2>Fonti</h2>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Propositions-and-Proofs/">Jeremy Avigad, Leonardo de Moura, Soonho Kong, Sebastian Ullrich, Theorem Proving in Lean 4: Propositions and Proofs</a></p>
+    <p class="source"><a href="https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html">Jeremy Avigad, Robert Y. Lewis, Floris van Doorn, Logic and Proof: Natural Deduction Rules</a></p>
+    <p class="source"><a href="https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/stanford.pdf">Philip Wadler, Propositions as Types, Communications of the ACM 58(12), 2015</a></p>
+</section>
+</main>
+<div class="counter"></div>
+<script>
+
+const slides = Array.from(document.querySelectorAll("section.slide"));
+const counter = document.querySelector(".counter");
+const scroller = document.querySelector("main");
+
+function activeIndex() {
+  const y = scroller.scrollTop;
+  let best = 0;
+  let bestDist = Infinity;
+  slides.forEach((slide, i) => {
+    const distance = Math.abs(slide.offsetTop - y);
+    if (distance < bestDist) {
+      best = i;
+      bestDist = distance;
+    }
+  });
+  return best;
+}
+
+function updateCounter() {
+  if (counter) counter.textContent = `${activeIndex() + 1} / ${slides.length}`;
+}
+
+function go(delta) {
+  const index = Math.max(0, Math.min(slides.length - 1, activeIndex() + delta));
+  slides[index].scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  } else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    slides[0].scrollIntoView({ behavior: "smooth" });
+  } else if (event.key === "End") {
+    event.preventDefault();
+    slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+scroller.addEventListener("scroll", updateCounter);
+updateCounter();
+
+</script>
+</body>
+</html>
