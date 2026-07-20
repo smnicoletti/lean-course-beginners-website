@@ -382,7 +382,7 @@ nav a { margin-right: 1rem; }
   </span><span class="tactic"><label for="tactic-state-7-7713-7734-743"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.exact-7713" data-verso-hover="14">exact</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.490" data-verso-hover="56">hContraddizione</span></label><input type="checkbox" class="tactic-toggle" id="tactic-state-7-7713-7734-743"><span class="tactic-state">All goals completed! 🐙</span></span></code></div>
 <p>La prima assunzione trasforma <code>¬Piove</code> in <code>¬PrendoOmbrello</code>. Quest&#x27;ultimo fatto è una funzione da <code>PrendoOmbrello</code> a <code>False</code>; applicandola all&#x27;assunzione <code>hPrendoOmbrello</code>, otteniamo la contraddizione richiesta.</p>
 <h2>11. Come scegliere una regola</h2>
-<p>Di fronte a un proof state, conviene distinguere due domande.</p>
+<p>Di fronte a un proof state, conviene porsi alcune domande.</p>
 <p>La prima riguarda il goal: qual è il suo connettivo principale? Se il goal è un&#x27;implicazione, una congiunzione, una disgiunzione, una negazione o un bicondizionale, una regola di introduzione suggerisce come costruirlo.</p>
 <p>La seconda riguarda il contesto: quali dimostrazioni composte sono già disponibili? Un&#x27;implicazione può essere applicata; una congiunzione può essere scomposta; una disgiunzione richiede casi; una negazione può essere applicata alla proposizione che nega; un bicondizionale offre due direzioni.</p>
 <p>Le principali corrispondenze operative sono:</p>
