@@ -82,8 +82,15 @@ nav a { margin-right: 1rem; }
 .card .kicker { color: var(--accent); font-size: .82rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .card strong { display: block; margin-top: .55rem; font-size: 1.25rem; line-height: 1.22; }
 .card span { display: block; margin-top: .6rem; color: var(--muted); }
+.course-calendar { margin: 0 0 2.75rem; padding: 1.35rem; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(135deg, #f8faf9, #f2f7f5); box-shadow: 0 8px 24px rgb(0 0 0 / .04); }
+.course-calendar h2, .lecture-materials h2 { margin: 0 0 1rem; padding: 0; border: 0; font-size: 1.35rem; }
+.course-calendar ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: 0; padding: 0; list-style: none; }
+.course-calendar li { padding: .85rem 1rem; border: 1px solid rgb(10 111 98 / .18); border-radius: 8px; background: #fff; font-weight: 650; }
+.course-calendar li::before { content: ""; display: inline-block; width: .55rem; height: .55rem; margin-right: .7rem; border-radius: 50%; background: var(--accent); vertical-align: .08em; }
+.lecture-materials { margin-top: 0; }
 @media (max-width: 720px) {
   .index .card-grid { grid-template-columns: 1fr; }
+  .course-calendar ul { grid-template-columns: 1fr; }
 }
 .lean-rendered { max-width: 1160px; margin: 1rem 0; }
 .lean-rendered .hl.lean { display: block; white-space: pre-wrap; }
@@ -119,7 +126,7 @@ nav a { margin-right: 1rem; }
 <body class="index">
 <div class="site-author"><a href="https://leancourse.stefanonicoletti.com/">Stefano M. Nicoletti</a></div>
 <main>
-<nav><a href="../index.html">Home</a></nav><div class="hero"><h1>Reasoning, Proof, and Formalization with Lean 4</h1><p>A Gentle Introduction to Lean for Beginners</p><p>Lecture notes, slide, file Lean per la lezione in classe, esercizi e soluzioni.</p></div><div class="card-grid"><a class="card" href="Lecture01.html"><span class="kicker">Lezione 1</span><strong>Lezione 1: Che cos&#x27;è un interactive theorem prover?</strong><span>Apri i materiali</span></a><a class="card" href="Lecture02.html"><span class="kicker">Lezione 2</span><strong>Lezione 2: Proposizioni, dimostrazioni e regole logiche</strong><span>Apri i materiali</span></a><a class="card" href="Lecture03.html"><span class="kicker">Lezione 3</span><strong>Lezione 3: Dalla deduzione naturale alle dimostrazioni in Lean</strong><span>Apri i materiali</span></a><a class="card" href="Lecture04.html"><span class="kicker">Lezione 4</span><strong>Lezione 4: Logica classica e quantificatori</strong><span>Apri i materiali</span></a></div>
+<nav><a href="../index.html">Home</a></nav><div class="hero"><h1>Reasoning, Proof, and Formalization with Lean 4</h1><p>A Gentle Introduction to Lean for Beginners</p><p>Lecture notes, slide, file Lean per la lezione in classe, esercizi e soluzioni.</p></div><section class="course-calendar"><h2>Prossime lezioni</h2><ul><li>Lunedì 7 settembre 2026</li><li>Lunedì 14 settembre 2026</li><li>Lunedì 12 ottobre 2026</li><li>Lunedì 19 ottobre 2026</li></ul></section><section class="lecture-materials"><h2>Materiali per lezione</h2><div class="card-grid"><a class="card" href="Lecture01.html"><span class="kicker">Lezione 1</span><strong>Lezione 1: Che cos&#x27;è un interactive theorem prover?</strong><span>Apri i materiali</span></a><a class="card" href="Lecture02.html"><span class="kicker">Lezione 2</span><strong>Lezione 2: Proposizioni, dimostrazioni e regole logiche</strong><span>Apri i materiali</span></a><a class="card" href="Lecture03.html"><span class="kicker">Lezione 3</span><strong>Lezione 3: Dalla deduzione naturale alle dimostrazioni in Lean</strong><span>Apri i materiali</span></a><a class="card" href="Lecture04.html"><span class="kicker">Lezione 4</span><strong>Lezione 4: Logica classica e quantificatori</strong><span>Apri i materiali</span></a></div></section>
 </main>
 
 

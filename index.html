@@ -82,8 +82,15 @@ nav a { margin-right: 1rem; }
 .card .kicker { color: var(--accent); font-size: .82rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .card strong { display: block; margin-top: .55rem; font-size: 1.25rem; line-height: 1.22; }
 .card span { display: block; margin-top: .6rem; color: var(--muted); }
+.course-calendar { margin: 0 0 2.75rem; padding: 1.35rem; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(135deg, #f8faf9, #f2f7f5); box-shadow: 0 8px 24px rgb(0 0 0 / .04); }
+.course-calendar h2, .lecture-materials h2 { margin: 0 0 1rem; padding: 0; border: 0; font-size: 1.35rem; }
+.course-calendar ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: 0; padding: 0; list-style: none; }
+.course-calendar li { padding: .85rem 1rem; border: 1px solid rgb(10 111 98 / .18); border-radius: 8px; background: #fff; font-weight: 650; }
+.course-calendar li::before { content: ""; display: inline-block; width: .55rem; height: .55rem; margin-right: .7rem; border-radius: 50%; background: var(--accent); vertical-align: .08em; }
+.lecture-materials { margin-top: 0; }
 @media (max-width: 720px) {
   .index .card-grid { grid-template-columns: 1fr; }
+  .course-calendar ul { grid-template-columns: 1fr; }
 }
 .lean-rendered { max-width: 1160px; margin: 1rem 0; }
 .lean-rendered .hl.lean { display: block; white-space: pre-wrap; }

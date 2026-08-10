@@ -3,6 +3,8 @@
 
 Author: Stefano M. Nicoletti
 Website: https://leancourse.stefanonicoletti.com/
+
+Replace each `sorry` with a proposition or proof.
 -/
 
 namespace Course.Shared.Lecture04.EN.Solutions
@@ -11,106 +13,59 @@ section ReductioAdAbsurdum
 
 example (Study PassExam : Prop)
     (hNotStudyNotPass : ¬Study → ¬PassExam)
-    (hPassExam : PassExam) : Study := by
+    (hPassExam : PassExam) :
+    Study := by
   apply Classical.byContradiction
-  intro hNotStudy
-  have hNotPassExam := hNotStudyNotPass hNotStudy
-  have hContradiction := hNotPassExam hPassExam
-  exact hContradiction
+  intro hNonStudy
+  have hNotPassExam := hNotStudyNotPass hNonStudy
+  exact hNotPassExam hPassExam
 
 end ReductioAdAbsurdum
 
 section FormalizationWithVocabulary
 
 variable (Thing : Type)
-variable (Researcher Article Interesting Reviewed : Thing → Prop)
-variable (Reads Cites : Thing → Thing → Prop)
-variable (favoriteArticle : Thing → Thing)
-variable (ada : Thing)
+variable (Poet Musician Curious Scholar Tired : Thing → Prop)
+variable (Writes Plays Listens : Thing → Prop)
 
-#check ∀ x : Thing, Researcher x →
-  ∃ y : Thing, Article y ∧ Reads x y
-#check ∃ x : Thing, Article x ∧ Interesting x ∧ Reviewed x
-#check Interesting (favoriteArticle ada)
-#check ∀ x : Thing, Researcher x → Cites x (favoriteArticle x)
-#check ∀ x : Thing, Researcher x →
-  ∃ y : Thing, Article y ∧ Interesting y ∧ Reads x y
-#check ∃ y : Thing, Article y ∧
-  ∀ x : Thing, Researcher x → Reads x y
+-- 1. Every poet writes.
+#check ∀ x : Thing, Poet x → Writes x
+-- 2. Some musician plays.
+#check ∃ x : Thing, Musician x ∧ Plays x
+-- 3. Every curious musician listens.
+#check ∀ x : Thing, Musician x → Curious x → Listens x
+-- 4. There is a poet who writes and listens.
+#check ∃ x : Thing, Poet x ∧ Writes x ∧ Listens x
+-- 5. Every scholar writes or listens.
+#check ∀ x : Thing, Scholar x → Writes x ∨ Listens x
+-- 6. No tired musician plays.
+#check ∀ x : Thing, Musician x → Tired x → ¬Plays x
+-- 7. There is a poet who is not tired.
+#check ∃ x : Thing, Poet x ∧ ¬Tired x
+-- 8. Every poet writes if and only if they listen.
+#check ∀ x : Thing, Poet x → (Writes x ↔ Listens x)
 
 end FormalizationWithVocabulary
 
 section IndependentFormalization
 
 variable (Thing : Type)
-variable (Museum Artwork Visitor : Thing → Prop)
-variable (Exhibits Admires Visits : Thing → Thing → Prop)
-variable (curatorOf favoriteArtwork : Thing → Thing)
-variable (uffizi rome : Thing)
-
-#check ∀ x : Thing, Museum x →
-  ∃ y : Thing, Artwork y ∧ Exhibits x y
-#check ∃ y : Thing, Artwork y ∧
-  ∀ x : Thing, Visitor x → Admires x y
-#check ¬∃ x : Thing, Visitor x ∧
-  ∀ y : Thing, Artwork y → Admires x y
-#check Visits (curatorOf uffizi) rome
-#check ∀ x : Thing, Visitor x → Admires x (favoriteArtwork x)
-#check ∃ x : Thing, Visitor x ∧ Exhibits uffizi (favoriteArtwork x)
+variable (Astronomer Observes Cook Experiments Tastes : Thing → Prop)
+variable (Athlete Trains Rests Librarian Distracted Catalogs : Thing → Prop)
+variable (Painter Exhibits Sells Botanist Classifies Studies : Thing → Prop)
+-- 1. Every astronomer observes.
+#check ∀ x : Thing, Astronomer x → Observes x
+-- 2. Some cook experiments and tastes.
+#check ∃ x : Thing, Cook x ∧ Experiments x ∧ Tastes x
+-- 3. Every athlete trains or rests.
+#check ∀ x : Thing, Athlete x → Trains x ∨ Rests x
+-- 4. No distracted librarian catalogs.
+#check ∀ x : Thing, Librarian x → Distracted x → ¬Catalogs x
+-- 5. There is a painter who exhibits but does not sell.
+#check ∃ x : Thing, Painter x ∧ Exhibits x ∧ ¬Sells x
+-- 6. Every botanist classifies if and only if they study.
+#check ∀ x : Thing, Botanist x → (Classifies x ↔ Studies x)
 
 end IndependentFormalization
-
-section QuantifierRules
-
-example (Thing : Type) (Cat Sleeps : Thing → Prop) :
-    ∀ x : Thing, Cat x → Sleeps x → Sleeps x := by
-  intro x
-  intro hXCat
-  intro hXSleeps
-  exact hXSleeps
-
-example (Thing : Type)
-    (Library Open : Thing → Prop)
-    (centralLibrary : Thing)
-    (hEveryLibraryOpen : ∀ x : Thing, Library x → Open x)
-    (hCentralLibrary : Library centralLibrary) :
-    Open centralLibrary := by
-  have hIfCentralLibraryThenOpen := hEveryLibraryOpen centralLibrary
-  have hCentralOpen := hIfCentralLibraryThenOpen hCentralLibrary
-  exact hCentralOpen
-
-example (Thing : Type)
-    (BakesBread : Thing → Prop)
-    (beatrice : Thing)
-    (hBeatriceBakesBread : BakesBread beatrice) :
-    ∃ x : Thing, BakesBread x := by
-  apply Exists.intro beatrice
-  exact hBeatriceBakesBread
-
-example (Thing : Type)
-    (PressedAlarm : Thing → Prop)
-    (SirenSounds : Prop)
-    (hSomeonePressedAlarm : ∃ x : Thing, PressedAlarm x)
-    (hPressingSoundsSiren : ∀ x : Thing, PressedAlarm x → SirenSounds) :
-    SirenSounds := by
-  apply Exists.elim hSomeonePressedAlarm
-  intro y
-  intro hYPressedAlarm
-  have hSiren := hPressingSoundsSiren y hYPressedAlarm
-  exact hSiren
-
-example (Thing : Type)
-    (HasSeeds PlantsFlowers : Thing → Prop)
-    (hSomeoneHasSeeds : ∃ x : Thing, HasSeeds x)
-    (hSeedsPlantsFlowers : ∀ x : Thing, HasSeeds x → PlantsFlowers x) :
-    ∃ x : Thing, PlantsFlowers x := by
-  apply Exists.elim hSomeoneHasSeeds
-  intro x
-  intro hXHasSeeds
-  apply Exists.intro x
-  have hXPlantsFlowers := hSeedsPlantsFlowers x hXHasSeeds
-  exact hXPlantsFlowers
-
-end QuantifierRules
 
 end Course.Shared.Lecture04.EN.Solutions
