@@ -266,6 +266,8 @@ variable (Filosofa Curiosa : Cosa → Prop)
 <p>Nel primo caso prendiamo una cosa qualsiasi e diciamo: <em>se</em> è una filosofa, allora è curiosa. Il quantificatore universale copre l&#x27;intero dominio; l&#x27;implicazione restringe l&#x27;affermazione agli oggetti che soddisfano <code>Filosofa</code>.</p>
 <p>Nel secondo caso cerchiamo un singolo testimone che sia <em>sia</em> una filosofa <em>sia</em> curiosa. Per questo le due proprietà sono collegate da una congiunzione.</p>
 <p>Consideriamo altri esempi:</p>
+<table><thead><tr><th>Enunciato</th><th>Lean</th></tr></thead><tbody><tr><td>Ogni studentessa legge</td><td><code>∀ x : Cosa, Studentessa x → Legge x</code></td></tr><tr><td>Qualche studentessa legge</td><td><code>∃ x : Cosa, Studentessa x ∧ Legge x</code></td></tr><tr><td>Ogni studentessa che legge comprende</td><td><code>∀ x : Cosa, Studentessa x → Legge x → Comprende x</code></td></tr><tr><td>Esiste una studentessa che legge e comprende</td><td><code>∃ x : Cosa, Studentessa x ∧ Legge x ∧ Comprende x</code></td></tr></tbody></table>
+<p>Possiamo verificare le stesse formalizzazioni in Lean:</p>
 <pre><code>variable (Cosa : Type)
 variable (Studentessa Legge Comprende : Cosa → Prop)
 

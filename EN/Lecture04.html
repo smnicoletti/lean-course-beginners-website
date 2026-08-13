@@ -227,6 +227,9 @@ variable (Philosopher Curious : Thing → Prop)
 #check ∀ x : Thing, Philosopher x → Curious x
 #check ∃ x : Thing, Philosopher x ∧ Curious x</code></pre>
 <p>In the universal formula we take an arbitrary thing and say: <em>if</em> it is a philosopher, then it is curious. The implication restricts the assertion to philosophers. In the existential formula we seek one witness that is <em>both</em> a philosopher <em>and</em> curious, so the properties are joined by a conjunction.</p>
+<p>Consider the following examples:</p>
+<table><thead><tr><th>Statement</th><th>Lean</th></tr></thead><tbody><tr><td>Every student reads</td><td><code>∀ x : Thing, Student x → Reads x</code></td></tr><tr><td>Some student reads</td><td><code>∃ x : Thing, Student x ∧ Reads x</code></td></tr><tr><td>Every student who reads understands</td><td><code>∀ x : Thing, Student x → Reads x → Understands x</code></td></tr><tr><td>There is a student who reads and understands</td><td><code>∃ x : Thing, Student x ∧ Reads x ∧ Understands x</code></td></tr></tbody></table>
+<p>We can check the same formalizations in Lean:</p>
 <pre><code>variable (Thing : Type)
 variable (Student Reads Understands : Thing → Prop)
 
