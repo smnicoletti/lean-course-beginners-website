@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="it" data-generator="verso-slides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lezione 5 - Regole dei quantificatori</title>
+<style>
+
+:root {
+  --ink: #111827;
+  --muted: #536170;
+  --paper: #f7f9fb;
+  --panel: #ffffff;
+  --lean-blue: #0b5cad;
+  --lean-cyan: #00a6c8;
+  --lean-green: #13a05f;
+  --line: #d8e0e8;
+  --code: #f4f7fb;
+  --shadow: rgba(15, 23, 42, .12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, var(--lean-blue) 0 10px, transparent 10px),
+    radial-gradient(circle at 90% 10%, rgba(0,166,200,.10), transparent 32rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+a { color: var(--lean-blue); font-weight: 650; }
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+section.slide {
+  position: relative;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6vh 8vw 7vh calc(8vw + 10px);
+  border-bottom: 1px solid var(--line);
+}
+section.slide.title {
+  background:
+    linear-gradient(135deg, rgba(11,92,173,.96), rgba(0,166,200,.88)),
+    var(--lean-blue);
+  color: white;
+}
+section.slide.title h1,
+section.slide.title h2 { color: white; max-width: 980px; }
+section.slide.title .kicker,
+section.slide.title .note { color: rgba(255,255,255,.84); }
+section.slide:not(.title)::before {
+  content: "Lean 4";
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  color: var(--lean-blue);
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+h1, h2, h3 {
+  margin: 0 0 .45rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+h1, h2 {
+  max-width: 1120px;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  color: var(--lean-blue);
+}
+h3 { font-size: clamp(1.35rem, 2vw, 2.1rem); }
+p, li, td, th { font-size: clamp(1.18rem, 1.7vw, 1.7rem); }
+p { max-width: 1060px; margin: .25rem 0; }
+ul { max-width: 1080px; padding-left: 1.2em; margin: .35rem 0; }
+li { margin: .35rem 0; }
+table {
+  border-collapse: collapse;
+  max-width: 1120px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: .7rem .9rem;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--lean-blue);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  text-transform: uppercase;
+}
+pre, .hl.lean {
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--lean-blue);
+  border-radius: 7px;
+  padding: .9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(.78rem, 1vw, 1.02rem);
+  box-shadow: 0 10px 22px rgba(15,23,42,.08);
+}
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+blockquote {
+  max-width: 980px;
+  border-left: 7px solid var(--lean-cyan);
+  margin: .6rem 0;
+  padding: .65rem 0 .65rem 1.2rem;
+  background: rgba(255,255,255,.7);
+}
+.kicker {
+  color: var(--lean-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: clamp(.9rem, 1.1vw, 1.1rem);
+}
+.note, .source { color: var(--muted); font-size: clamp(.88rem, 1.05vw, 1rem); }
+.counter {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1rem;
+  color: var(--muted);
+  font-size: .9rem;
+  z-index: 5;
+}
+.lean-rendered {
+  max-width: 1160px;
+}
+.lean-rendered .hl.lean {
+  display: block;
+  white-space: pre-wrap;
+}
+.tactic-toggle { margin-left: .35rem; }
+.tactic label {
+  cursor: pointer;
+  border-bottom: 2px solid var(--lean-green);
+}
+.tactic-state {
+  display: none;
+  white-space: normal;
+  margin: .7rem 0 0;
+  padding: .8rem;
+  background: var(--panel);
+  border: 1px solid var(--lean-green);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(15,23,42,.10);
+}
+.tactic-toggle:checked + .tactic-state { display: block; }
+.goal + .goal {
+  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .5rem;
+}
+.hypotheses {
+  display: block;
+  margin-bottom: .4rem;
+}
+.hypothesis { display: block; }
+.conclusion {
+  display: block;
+  font-weight: 700;
+}
+.token.keyword { color: #7c3aed; font-weight: 700; }
+.token.const { color: var(--lean-blue); }
+.token.var { color: #2563eb; }
+.token.sort { color: #b45309; }
+@media (max-width: 720px) {
+  section.slide { padding: 5vh 5vw 7vh calc(5vw + 10px); }
+  section.slide:not(.title)::before { display: none; }
+  h1, h2 { font-size: clamp(1.8rem, 10vw, 3rem); }
+}
+@media print {
+  main { height: auto; overflow: visible; scroll-snap-type: none; }
+  section.slide { min-height: auto; break-inside: avoid; }
+  .counter { display: none; }
+}
+
+</style>
+</head>
+<body class="verso-slides">
+<main>
+<section class="slide title" id="1-reasoning-proof-and-formalization-with-lean-4">
+<h2>Reasoning, Proof, and Formalization with Lean 4</h2>
+<style>
+    section.slide.content:has(.nd-rule-slide) { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); grid-template-rows: auto auto auto auto; column-gap: 1rem; align-content: center; align-items: start; }
+    section.slide.content:has(.nd-rule-slide) > h2, section.slide.content:has(.nd-rule-slide) > p:first-of-type, section.slide.content:has(.nd-rule-slide) > .nd-rule-slide { grid-column: 1 / -1; }
+    section.slide.content:has(.nd-rule-slide) > p:nth-of-type(2), section.slide.content:has(.nd-rule-slide) > p:nth-of-type(3) { margin: .55rem 0 0; padding: .75rem .9rem; border: 1px solid rgba(15,23,42,.12); border-radius: 14px; box-shadow: 0 5px 14px rgba(15,23,42,.06); font-size: .78em; line-height: 1.34; }
+    section.slide.content:has(.nd-rule-slide) > p:nth-of-type(2) { grid-column: 1; background: #eef6ff; border-left: 6px solid #1565c0; }
+    section.slide.content:has(.nd-rule-slide) > p:nth-of-type(3) { grid-column: 2; background: #fff8e8; border-left: 6px solid #d78b00; }
+    </style>
+<p>Lezione 5 - Regole dei quantificatori</p>
+<p>Stefano M. Nicoletti</p>
+</section>
+<section class="slide content" id="2-struttura-della-lezione">
+<h2>Struttura della lezione</h2>
+<ul><li>Ripassiamo la formalizzazione di enunciati quantificati.</li><li>Completiamo gli esercizi con funzioni, relazioni e quantificatori annidati.</li><li>Introduciamo ed eliminiamo i quantificatori universale ed esistenziale.</li><li>Comprendiamo le condizioni che rendono valide queste regole.</li><li>Combiniamo quantificatori e connettivi in dimostrazioni più articolate.</li></ul>
+</section>
+<section class="slide content" id="3-ripasso-dal-linguaggio-naturale-a-lean">
+<h2>Ripasso: dal linguaggio naturale a Lean</h2>
+<p>Usiamo <code>Studentessa</code>, <code>Legge</code> e <code>Comprende</code> come predicati su <code>Cosa</code>. Come formalizziamo?</p>
+<ul><li>Ogni studentessa legge.</li><li>Qualche studentessa legge.</li><li>Ogni studentessa che legge comprende.</li><li>Esiste una studentessa che legge e comprende.</li></ul>
+</section>
+<section class="slide content" id="4-ripasso-formalizzazione">
+<h2>Ripasso: formalizzazione</h2>
+<table><thead><tr><th>Enunciato</th><th>Lean</th></tr></thead><tbody><tr><td>Ogni studentessa legge</td><td>∀ x : Cosa, Studentessa x → Legge x</td></tr><tr><td>Qualche studentessa legge</td><td>∃ x : Cosa, Studentessa x ∧ Legge x</td></tr><tr><td>Ogni studentessa che legge comprende</td><td>∀ x : Cosa, Studentessa x → Legge x → Comprende x</td></tr><tr><td>Esiste una studentessa che legge e comprende</td><td>∃ x : Cosa, Studentessa x ∧ Legge x ∧ Comprende x</td></tr></tbody></table>
+<p><code>#check</code> verifica che ciascuna espressione sia una proposizione ben formata (non la dimostra).</p>
+</section>
+<section class="slide content" id="5-esercizio-formalizzare-con-una-funzione">
+<h2>Esercizio: formalizzare con una funzione</h2>
+<p>Usiamo anche <code>madreDi : Cosa → Cosa</code>. Come formalizziamo?</p>
+<ul><li>La madre di Ipazia è curiosa.</li><li>Ogni studentessa conosce la propria madre.</li><li>Esiste una studentessa la cui madre legge.</li></ul>
+</section>
+<section class="slide content" id="6-esercizio-controlliamo-le-funzioni">
+<h2>Esercizio: controlliamo le funzioni</h2>
+<table><thead><tr><th>Enunciato</th><th>Lean</th></tr></thead><tbody><tr><td>La madre di Ipazia è curiosa</td><td>Curiosa (madreDi ipazia)</td></tr><tr><td>Ogni studentessa conosce la propria madre</td><td>∀ x : Cosa, Studentessa x → Conosce x (madreDi x)</td></tr><tr><td>Esiste una studentessa la cui madre legge</td><td>∃ x : Cosa, Studentessa x ∧ Legge (madreDi x)</td></tr></tbody></table>
+<p>Le parentesi mostrano che costruiamo prima il termine <code>madreDi x</code> e poi lo usiamo come argomento.</p>
+</section>
+<section class="slide content" id="7-esercizio-quantificatori-annidati">
+<h2>Esercizio: quantificatori annidati</h2>
+<p>Usiamo <code>Conosce : Cosa → Cosa → Prop</code>. Come formalizziamo?</p>
+<ul><li>Ogni persona conosce qualcuno.</li><li>Qualcuno conosce ogni persona.</li><li>Nessuno conosce ogni persona.</li></ul>
+</section>
+<section class="slide content" id="8-esercizio-controlliamo-i-quantificatori-annidati">
+<h2>Esercizio: controlliamo i quantificatori annidati</h2>
+<table><thead><tr><th>Enunciato</th><th>Lean</th></tr></thead><tbody><tr><td>Ogni persona conosce qualcuno</td><td>∀ x : Cosa, Persona x → ∃ y : Cosa, Persona y ∧ Conosce x y</td></tr><tr><td>Qualcuno conosce ogni persona</td><td>∃ x : Cosa, Persona x ∧ ∀ y : Cosa, Persona y → Conosce x y</td></tr><tr><td>Nessuno conosce ogni persona</td><td>¬∃ x : Cosa, Persona x ∧ ∀ y : Cosa, Persona y → Conosce x y</td></tr></tbody></table>
+<p>L&#x27;ordine dei quantificatori determina se la persona conosciuta può cambiare al cambiare della prima persona.</p>
+</section>
+<section class="slide content" id="9-quantificatore-universale-introduzione-i">
+<h2>Quantificatore universale: introduzione ∀I</h2>
+<p>Regola:</p>
+<img class="nd-rule-slide" src="data:image/png;base64,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" alt="Introduzione del quantificatore universale" style="width:28%;">
+<p><strong>Schema naturale:</strong> vogliamo dimostrare <code>∀ y : Cosa, A y</code>. Introduciamo una cosa arbitraria <code>x</code>; il goal diventa <code>A x</code>. Dimostriamo <code>A x</code> senza usare informazioni particolari su <code>x</code>; concludiamo che <code>A</code> vale per ogni cosa.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che ogni persona curiosa è curiosa. Introduciamo una cosa arbitraria <code>x</code>; introduciamo l&#x27;assunzione che <code>x</code> sia una persona; introduciamo l&#x27;assunzione che <code>x</code> sia curiosa; usiamo esattamente quest&#x27;ultima assunzione.</p>
+</section>
+<section class="slide content" id="10-i-che-cosa-significa-arbitraria">
+<h2>∀I: che cosa significa «arbitraria»?</h2>
+<p>La conclusione deve valere per una cosa qualsiasi, non soltanto per una cosa già nota.</p>
+<ul><li>Da <code>hIpaziaCuriosa : Curiosa ipazia</code> non possiamo concludere <code>∀ y : Cosa, Curiosa y</code>.</li><li>Dopo <code>intro x</code>, Lean ci dà una nuova <code>x : Cosa</code> della quale non conosciamo l&#x27;identità.</li><li>Il goal è ora <code>Curiosa x</code>, ma <code>hIpaziaCuriosa</code> dimostra soltanto <code>Curiosa ipazia</code>.</li></ul>
+<p>Perciò <code>exact hIpaziaCuriosa</code> non funziona: sapere qualcosa di Ipazia non dimostra la stessa proprietà della nuova <code>x</code> arbitraria.</p>
+</section>
+<section class="slide content" id="11-i-due-variabili-chiamate-x">
+<h2>∀I: due variabili chiamate x</h2>
+<p>Possiamo vedere la stessa difficoltà dichiarando prima un oggetto particolare <code>x : Cosa</code> e usando di nuovo il nome <code>x</code> dopo <code>intro x</code>.</p>
+<ul><li>Lean non confonde i due oggetti: nel tactic state rinomina il primo come <code>x✝</code>.</li><li>L&#x27;assunzione diventa <code>hXCuriosa : Curiosa x✝</code>.</li><li>La variabile introdotta dal quantificatore è la nuova <code>x : Cosa</code>.</li><li>Il goal <code>Curiosa x</code> non coincide con il tipo <code>Curiosa x✝</code> dell&#x27;assunzione.</li></ul>
+<p>Il simbolo <code>✝</code> non ha un significato logico speciale: segnala soltanto la rinomina automatica di una variabile locale con lo stesso nome visualizzato.</p>
+</section>
+<section class="slide content" id="12-i-assunzioni-aperte-e-variabili-libere">
+<h2>∀I: assunzioni aperte e variabili libere</h2>
+<p>Nella regola, <code>x</code> non deve comparire libera in alcuna assunzione ancora aperta quando concludiamo <code>∀ y : Cosa, A y</code>.</p>
+<ul><li><strong>Variabile libera:</strong> in <code>Curiosa x</code>, nessun quantificatore lega <code>x</code>.</li><li><strong>Variabile legata:</strong> in <code>∀ y : Cosa, Curiosa y</code>, il quantificatore lega <code>y</code>.</li><li><strong>Assunzione aperta problematica:</strong> <code>hXCuriosa : Curiosa x</code>, se fosse già disponibile prima della generalizzazione.</li></ul>
+<p>Nel codice precedente, <code>intro x</code> crea invece una nuova variabile locale dentro il goal universale. Le assunzioni precedenti riguardano <code>ipazia</code>, non questa nuova <code>x</code>; lo scope impedisce di confonderle.</p>
+</section>
+<section class="slide content" id="13-quantificatore-universale-eliminazione-e">
+<h2>Quantificatore universale: eliminazione ∀E</h2>
+<p>Regola:</p>
+<img class="nd-rule-slide" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALYAAABhCAIAAAD0qczEAAAACXBIWXMAACHVAAAh1QEEnLSdAAARzklEQVR42u1daVRTRxuehDUEFIjgggVkqSCe1oooMYJsVixVEcvSigJaOBxoa0UtraAerVYPp8WWo4C1olUR1+MCbsSKLKJA3RCLCyopVCCyhCAkZLvfjzm9J19yc0kI0hjm+XfnvjN3bvLcmXfeee9zKRiGAQQE1aCinwABUQQBUQQBUQQBUQQBUQQBUQQBUQQBUQQBAVEEAVEEAVHkDYDP569evVomk2nTyNq1azs7OxFFgFAofKP2QwKpVLp8+fLS0lJ1jDs7OwMCAgICAqhUrZ6WyMjIwMDAtra2kU4RJyenkpISNY1Pnz79wQcfDP8t5ebmHjlypLq6Wh0yRURE+Pv7L168WMuLzpw58/PPPw8NDe3v7x/RFJk3b97evXvVNM7JyZk7d+4w3097e/vGjRsBAC0tLQMaf/fdd0KhcMeOHUNy6eTkZAcHh6+//lrfhhFME5SUlJiYmHR2dg5o2djYSKFQqqurseHFqlWr4H1FRUWRWz58+NDIyOjhw4dDePUXL14YGRkN/12/UWg2isydO9fOzq6goGBAy0OHDk2ZMsXLy2s46V5dXf348WNnZ2d1RpGUlBR/f/8pU6YMYQccHR2XLl2anJysV4lamnJq69atM2bMGNDM2dk5MzNzOMkulUq9vb3v3Lnj4+MDAHj33XdJjG/dugUAKCoqGvJu3L59GwDAZrP1ZhTRmCIcDodKpT548IDEprS01MjIiMvlDued7N27Fz6+ERERAABzc3MS44SEBAcHB6lU+iZ64ubmFhERMXIpgmFYUFBQSkoKiUFcXFxYWNhw3kZHR4ebmxt0klavXg0HyJ6eHkJjoVA4atSomJiYN9SZ+Ph4Y2NjHo+nHxQxHMTctHLlysTExNraWlUGN27cOHHiBOGp7u7uy5cvd3R0MJlMfEnc0NBw/fp1c3Pz+fPnW1lZDaJLaWlp69atg3XHjx8PC1taWlxdXQldFj6fP2vWrAGXxGw2+9mzZ66uroGBgQYGBgCAjo6O4uLivr6+gICASZMmEVb09fXdt29fRUVFSEjICI2uLlmyhEqlmpiY+BEBw7DRo0cHBwcrV2Sz2eHh4TKZzNHRcdmyZfBx37Nnz9atW8eNG8flcj08PB49eqRpf+7cuXPv3r2VK1fCwwkTJuAUIbQvLy+HkQySNjkcTnBw8NOnT93d3bOzs/38/Ph8/o0bN2JjY6VSqbW1ta+v7/HjxwnrQmeorKxshLqrEImJiQsWLCA85e3tnZqaqlx+8eLFFStW4NP/6dOn4bJi+fLlGIYJBAL4127fvl2jnshkMhaLJb/OZLPZ8NaOHTtGWOWTTz6hUCgikYhkxT5v3rz29nZ8FgMAxMbG+vj48Pl8DMOWLFkCo0QqB2dDQ5Kz+u+LYBhWVVVFpVKbmpoUyv/66y8AwKNHjxTKe3p6fH19+/v78ZLKykoAgKGhIWzkyZMn8LCsrEyjnhw4cCAhIUG+pK6uDlJk165dhFU8PT0tLS1J2gwNDX38+LF8iYmJCQCgoKAAHtrZ2QEAduzYoaoFW1tbV1fXEU0RDMM8PDyUn/h169axWCxl48zMzNzcXPmSI0eOAAD8/f3xkvr6+paWFo36wOPx3N3d8cdd/qEHAHzzzTeEtcaOHevg4KCqzTt37iiE3ZqbmwEAZmZmAoEAlnC5XPKYm7u7u6mp6UgMnckjLi7uwIED8iUSieTw4cO4TyCPKVOmxMbGypfU1NQAAIKCgvASNze3cePGadSHTZs2ffXVVwwGQ77Q2toaPvSqfJHe3t7Ro0er9M6o1J07dyp3lcVimZqawhIbGxvymJu1tbVQKJRKpSPXF8EwrLW11dDQsLS0FC85e/YsnU5XtdRUAFzOVFRUDLoD9+/fp9FoDAZjjBLgtm1QUBBhRWNjY29vb/UvtGbNGgDAtm3b1K8yf/58AEBfX9+InmgwDFu0aFFsbCx+uHjx4ri4OHUqdnV1UalUGo0m751oirlz51ZVVRGeggtaDw8PwrOjRo2aOnWq+heCbC4vL1e/yuzZsykUikwmG9ETDZxrTp482dPTAwBoa2u7cOEC4SyjjJKSEplMxmQyjY2NB3fp/Px8FxcXVQtXOGGpmmgsLCy6u7vVvFBHRwccrsgXyQrg8Xjm5uYUCmWExkVwhISE0Ol0GCU7fPjwpEmT5syZo07FP/74A24Kyhe2tbWdOXNGneo9PT3bt28n2cSH0bPOzk7C7A0HBwf1KQLZ7O3tLc9mDMNyc3PJKeLg4DAS80UUYGRkFB0dnZeXBwDIy8sjGUKKi4vxcAU8BADMnj1b3iYjI0PN627cuDExMdHGxkaVAe72tra2EiZG8fn8rq4uwrp1dXVHjx6VSCTw8MqVK8pdLSoqqq+vV3V1sVjc3t6uKvY6gtxViAcPHkB+GBgY/PPPP4Q2ly5dAgAYGBjAPRS4QAAAyMce2tragoKC1Jm8i4qKrKys8PUnIfBH/ObNm8pns7KyAABXr15VPtXZ2Umj0QAA58+fh7s51tbWAIC9e/fKbynPnz//5cuXqq7+559/aure6q0vAgCYOnXqjBkzkpOTg4OD8ci3AmAoetasWVZWVhKJZOPGjdu2bQMA3L17F584Vq1a9csvv5BP3u3t7RkZGWFhYf39/Y8fP1Zl9urVq+vXr8uPAYQBcvhHKqCmpkYgEDAYDJjpsmXLlrVr19JoNLyrcJswLi4O3wlSRlVVFdyp0eiX1Nm8YIr2yS85OTlJSUmnTp1aunQpocGTJ09CQ0Ojo6NtbW3Pnz//xRdffPjhh1u2bCkoKEhJSeno6Lh27Vp2djbhlhuOwMDAmzdv0mg0KpUqFAqFQuHq1at//PFHeZuGhgZPT0+RSGRsbAxdh/7+folE4unpCfdlIGQy2cSJE1ks1smTJxWuIhAIFi1aNGnSJB8fn2vXrrm5uaWmphYWFiYnJyclJY0ePfrcuXPJyckLFy4k6WpsbGxhYWFLS4tGzviECRPy8/P9/f3VMT59+nR6enp9fT15TwiRlZWl0SQ4BBR5/fr15s2bd+7caWRkRGL25MmTlpaWmTNnwpEcrjhqa2sZDIanp+cwO/9paWlZWVkvX760sLBQPsvlcmtra6dNmzZmzBh8nLt9+zaFQvHy8jIzMyNpWSwW29vbh4eHw+lMfcTExPT39x87dkwd46CgIBcXl9zc3OvXr/f19dXW1qalpclkMhqNlpeXN3bsWDyhXyKR8Pn8p0+fFhQU3Lt3DwBw8eLFBQsWDJ8v8pbi+fPnVCo1JydnyFvOz8+Hc6imFbXMC4YLKJJcO4lEAgfd7Ozs4QudvdVYtWrV+++/P+TNent7D5hZrWrL2snJac+ePQNabt26VTkq6OLiAjcxyOsGBgauX78eUUQtcLlcS0vLoU0yrayspNFoHA5ncNW1yQtWkyJXrlwJDw9HFFEXeXl5dnZ2r169GpLW+Hy+q6vrzz//POgWtMkLVpMiXV1dXl5ew7rofasBc2xhEqv2rcXHxzOZTDxzdhCwt7cPCAhQ2D9XwMGDBxcuXEgSNlTA33//vWnTJvzQ0tJS07eXDcHIRmZmZlxcXEZGRmpqqjbt7NmzRyQS/f7771r2R5u8YEJwudwXL17Il5w7dw5RRJP7NzQ8dOjQb7/9JpPJtHnz28jI6OTJkzAFWhssWbIkKSnJxMSEyWQSbhipygtWBfl9DwiYMocookn0kEKJj4/XspGEhIQh6YypqWlUVBSHw0lLS1M+W1RUFBMTY2io8l8TCAQwtiuVSrlcblVV1a5du8LDw7V6ihBFdNBDYjKZzc3NEydOlC+vr6+/devWwYMHyfco4OaGVCptbW19+vSp9koFiCI6h5kzZ7q7ux86dGjDhg3y5Xl5eSwWa/LkySR133nnncLCQvywo6MjLCxMy/4glSIdHUjUzwsmAYPBWL9+vba90WiJLBaL0f/3pn/kweUFq4qLPHjwIDo6WuFPXLFixZuKi5A4SghDiLFjx3700UfyA8mBAwciIiLMzc01bcrZ2VlhIKmrq9No5WU4iAcC/YXDM9dER0dnZWVZWFjAvGD1JcTkQaPR3nvvPfmSmpoad3d35Iu89Rh0XvCAKCoq0kh4B1FER6F+XrBGqKurKyws1EybCUPQVaiTF4zDyckJADB58mQSm76+Pn9/fxqNppH2jh5S5OzZs6dOnVLfHiZH6ua9zJgxg0ajhYSEDEgmmMs3ZswYqF2gsIRpaGjYt28fjKlMnz5d35IBiouL5d/5I8f+/fuZTCaJMIQyqqqqpk2b1traqoP3np2dDQAgYTydTldYnlCpVDqdbv4v8DRQHMuWLdMrivT29trb25uZmaljzGazbW1tB5HRs3v3bm9vb6FQqGu339PTk5KSohHjhxy6TpH09HTI/e7ubnLLpqYmBoMxoAiiqmk4MjIyMTEROUBvGUUaGhqgDAQgkrVRwKeffhoZGUmeHMpisVxcXAjP6qWqrv5TJCQkZPny5ZAiJSUlJJY3btwAAFRWVpLYQFV4Z2dnVQZRUVFeXl768Tr/EEJ34yKFhYUmJia4cA25GvP333/v6elJmIaDA35bgkSWfv369TU1NfCVdARdD50JhcINGzZkZmbi70W+fPlSlXFzc3NxcXFSUhJ5m5Aifn5+qgymT5/u5ua2b98+RIu3gCIZGRmRkZEODg7yIqqqjA8fPiyTyQICAkgalMlkFRUV5BQBAPj4+Jw9e1Z9aQlEkf8GjY2Np06dgvuTlpaWcGVPQpGrV6/a2Ng4Ojoqn2pvb+dwOBwOh81m83i8iRMnymQyDofT1NREmAju6+srEokgmRAGudM7DFizZs2OHTvwtcz48eOfP3+uiiJisfjWrVuEQwiGYWFhYVBHBAqN9Pf3f/zxx3AH5MSJEzDHQmEUAQCUlZXph/Dy0EDX/OdLly4tXLhQvoTFYgHVLxFBldX09HTyZuF3q44cOTJgB/RJVXdIoFujiEgkSk1NVZCzgu6IqlEEviSCv8KvyhGBGifqfGXL2tq6sbERjR066ov89NNPoaGhcNNSgSLd3d0CgYBwOQMAINFRBQDcv3+/q6vL1dVVIaecEAwGo6mpCTFDFynS3Nycn5//7bffKpSTL2p6e3sHpAjM11JT3UWvVHX1zF1NSUlpbm62t7dXjpHgFFEYYODcBAAgl4WBulbky10cMD9UJBIp75EiivyXuHbtWl9fH4/HUz51+fJlqKpDOIpA0e3Xr1+TOCJQxUpNivT09FAoFFzLG0EnKCIWi9etW6fqbWZcIZOQIlCJiiTYde/ePR6P5+bmRiJgJw99UtXVH18kKytrwYIFylEKdXwRKOBEQhG4lpEfQiQSCYkQmT6p6urJKNLU1LR//35cjFUZNjY2BgYGUqmUkCLQO+FwOKqqw01geYrs378fejCE41l7e7unpydihq5QRCQSffbZZzExMXQ6XeVAR6Xa2Ni0traqogiDwYCfPiUEDHJMnz4dHr5+/fro0aNQPloZtbW1IpFowM/moYlmOCCVSisrK/38/CoqKhoaGghjHvCxLi8vh0H06upqZVVuCoUyZ86cu3fvqhLf8fDwAP++ISYWi+Pj4zMzM/HovgIGp6qr5/hPYrpsNtvMzMzCwsLGxsbS0tLU1JROpyvrdyUkJBgbG9PpdCsrK1tbWysrKxqNZm5ufuHCBXmznJwcAEBdXR3htRobG52cnJYtW7Z79+7g4GBV3yeBiImJsba21uYTKCjrTBfB4/HMzMw2b96sykAgEJSWlpaXl5MnMItEonHjxn355ZeIFvpGEQzDYmNj7ezsxGKxNo0MWlVXvzEEAt+6gGfPnnl4eBw7diw0NHTQjTCZTEdHx4KCAuR+/J+3h+nLm/7p6emlpaVlZWWDi3rdvHkzMDDw0aNHyjsAyF3VE/T29rq7u//www+DqKu9qi6aaN4ONDQ0zJ49+8yZMzALSX1ERUWZmJhor5qK4iK6DhcXF/i9mFevXqlfC6rq/vrrr4gN+k8R6HIeP34cyi6oCaiqqyqYhqBXEw0CGkUQEEUQEEUQEEUQEEUQEEUQEBBFEBBFEBBFEBBFEBBFEBBFEPQD/wPqdrv7MRCt0gAAAABJRU5ErkJggg==" alt="Eliminazione del quantificatore universale" style="width:30%;">
+<p><strong>Schema naturale:</strong> abbiamo <code>∀ x, A x</code>; scegliamo un termine <code>t</code>; applichiamo la dimostrazione universale a <code>t</code>; abbiamo <code>A t</code> e usiamo esattamente questo fatto.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che Marta legge, date le assunzioni che ogni studentessa legge e che Marta è una studentessa. Applichiamo l&#x27;assunzione universale a Marta; abbiamo che, se Marta è una studentessa, allora legge. Applichiamo questo fatto all&#x27;assunzione che Marta è una studentessa; usiamo esattamente il risultato.</p>
+</section>
+<section class="slide content" id="14-e-quale-termine-possiamo-usare">
+<h2>∀E: quale termine possiamo usare?</h2>
+<p>Il termine <code>t</code> può essere qualsiasi termine del dominio adatto.</p>
+<ul><li>Può essere un nome: <code>marta</code>.</li><li>Può essere una variabile locale: <code>x</code>.</li><li>Può essere costruito da una funzione: <code>madreDi ipazia</code>.</li></ul>
+<p>Se abbiamo <code>h : ∀ x : Cosa, Curiosa x</code>, allora <code>h (madreDi ipazia)</code> ha tipo <code>Curiosa (madreDi ipazia)</code>. Lean controlla il tipo e gestisce i nomi delle variabili legate.</p>
+</section>
+<section class="slide content" id="15-quantificatore-esistenziale-introduzione-i">
+<h2>Quantificatore esistenziale: introduzione ∃I</h2>
+<p>Regola:</p>
+<img class="nd-rule-slide" src="data:image/png;base64,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" alt="Introduzione del quantificatore esistenziale" style="width:29%;">
+<p><strong>Schema naturale:</strong> vogliamo dimostrare <code>∃ x, A x</code>. Scegliamo un testimone <code>t</code>; applichiamo il costruttore dell&#x27;esistenziale usando <code>t</code>; il goal diventa <code>A t</code>; usiamo esattamente una dimostrazione di <code>A t</code>.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che esiste qualcuno che legge, data l&#x27;assunzione che Marta legge. Applichiamo il costruttore dell&#x27;esistenziale scegliendo Marta come testimone; il goal diventa «Marta legge»; usiamo esattamente l&#x27;assunzione disponibile.</p>
+</section>
+<section class="slide content" id="16-i-scegliere-il-testimone">
+<h2>∃I: scegliere il testimone</h2>
+<p>Anche qui il termine scelto può essere semplice oppure costruito.</p>
+<ul><li>Per dimostrare <code>∃ x, Legge x</code>, scegliamo <code>marta</code> se abbiamo <code>Legge marta</code>.</li><li>Per dimostrare <code>∃ x, Curiosa x</code>, scegliamo <code>madreDi ipazia</code> se abbiamo <code>Curiosa (madreDi ipazia)</code>.</li><li>Dopo la scelta, Lean sostituisce il testimone nel predicato e mostra il nuovo goal.</li></ul>
+<p>Il controllo dei tipi e lo scope dei legami impediscono sostituzioni scorrette.</p>
+</section>
+<section class="slide content" id="17-quantificatore-esistenziale-eliminazione-e">
+<h2>Quantificatore esistenziale: eliminazione ∃E</h2>
+<p>Regola:</p>
+<img class="nd-rule-slide" src="data:image/png;base64,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" alt="Eliminazione del quantificatore esistenziale" style="width:46%;">
+<p><strong>Schema naturale:</strong> abbiamo <code>∃ x, A x</code>. Applichiamo l&#x27;eliminazione dell&#x27;esistenziale; introduciamo un testimone arbitrario <code>y</code> e l&#x27;assunzione <code>A y</code>; dimostriamo <code>B</code>. Poiché <code>B</code> non dipende dall&#x27;identità di <code>y</code>, concludiamo <code>B</code>.</p>
+<p><strong>Esempio:</strong> vogliamo dimostrare che inizia un&#x27;indagine, date le assunzioni che qualcuno ha fatto una segnalazione e che, data una cosa qualsiasi <code>x</code>, se <code>x</code> fa una segnalazione, inizia un&#x27;indagine. Applichiamo l&#x27;eliminazione dell&#x27;esistenziale; introduciamo il testimone arbitrario <code>y</code>; introduciamo l&#x27;assunzione che <code>y</code> abbia fatto una segnalazione. Applichiamo la seconda assunzione a <code>y</code> e abbiamo che, se <code>y</code> ha fatto una segnalazione, inizia un&#x27;indagine; applichiamo questo fatto all&#x27;assunzione che <code>y</code> abbia fatto una segnalazione; abbiamo che inizia un&#x27;indagine e usiamo esattamente questo fatto.</p>
+</section>
+<section class="slide content" id="18-e-perch-il-testimone-arbitrario">
+<h2>∃E: perché il testimone è arbitrario?</h2>
+<p>L&#x27;esistenziale garantisce che un testimone esiste, ma non ci dice chi sia.</p>
+<ul><li>Possiamo usare l&#x27;assunzione <code>A y</code> ricevuta aprendo l&#x27;esistenziale.</li><li>Non possiamo attribuire a <code>y</code> proprietà che non seguono da <code>A y</code>.</li><li>La conclusione finale <code>B</code> non può contenere libera la variabile locale <code>y</code>.</li></ul>
+<p>Possiamo però riutilizzare <code>y</code> come testimone di un nuovo esistenziale: così la sua identità non compare nella conclusione.</p>
+</section>
+<section class="slide content" id="19-e-come-lean-applica-la-condizione">
+<h2>∃E: come Lean applica la condizione</h2>
+<p><code>Exists.elim</code> ci chiede una conclusione già fissata prima di aprire l&#x27;esistenziale.</p>
+<ul><li><code>apply Exists.elim hQualcunoHaFattoSegnalazione</code> apre l&#x27;assunzione esistenziale.</li><li><code>intro y</code> introduce un testimone locale arbitrario.</li><li><code>intro hYHaFattoSegnalazione</code> introduce l&#x27;assunzione che il testimone abbia fatto una segnalazione.</li><li>Con due <code>have</code> applichiamo la regola generale a <code>y</code> e poi alla segnalazione di <code>y</code>.</li><li><code>exact hIniziaIndagine</code> chiude il goal originale, che non contiene <code>y</code>.</li></ul>
+<p>Lean rifiuta una conclusione che dipenda illegalmente dall&#x27;identità del testimone locale.</p>
+</section>
+<section class="slide content" id="20-combinare-e-e-e-i">
+<h2>Combinare ∃E, ∀E e ∃I</h2>
+<p>Vogliamo dimostrare che qualcuna resta asciutta, date le assunzioni che qualcuna ha un ombrello e che chiunque abbia un ombrello resta asciutta.</p>
+<ul><li>Applichiamo <code>∃E</code> e otteniamo un testimone arbitrario <code>y</code> con un ombrello.</li><li>Applichiamo <code>∀E</code> a <code>y</code> e abbiamo che <code>y</code> resta asciutta.</li><li>Applichiamo <code>∃I</code>, scegliendo la stessa <code>y</code> come testimone.</li></ul>
+<p>La conclusione afferma soltanto che qualcuna resta asciutta: l&#x27;identità locale di <code>y</code> non sfugge dalla dimostrazione.</p>
+</section>
+<section class="slide content" id="21-combinare-e">
+<h2>Combinare ∀, → e ∧</h2>
+<p>Date le assunzioni che ogni studentessa che legge prende appunti e che ogni studentessa che legge comprende, vogliamo dimostrare che ogni studentessa che legge prende appunti e comprende.</p>
+<ul><li>Introduciamo una cosa arbitraria <code>x</code> e le assunzioni che sia studentessa e che legga.</li><li>Applichiamo entrambe le regole universali a <code>x</code>.</li><li>Applichiamo il costruttore della congiunzione.</li><li>Nei due casi usiamo i risultati ottenuti dalle regole universali.</li></ul>
+</section>
+<section class="slide content" id="22-combinare-e">
+<h2>Combinare ∃, ∨ e ∀</h2>
+<p>Qualcuno visita Roma oppure Atene; chi visita una delle due città vede un museo. Vogliamo dimostrare che qualcuno vede un museo.</p>
+<ul><li>Apriamo l&#x27;esistenziale e introduciamo un testimone arbitrario <code>y</code>.</li><li>Abbiamo il caso che <code>y</code> visiti Roma oppure il caso che visiti Atene.</li><li>In ciascun caso applichiamo la regola universale corrispondente a <code>y</code>.</li><li>Introduciamo l&#x27;esistenziale usando <code>y</code> come testimone.</li></ul>
+</section>
+<section class="slide content" id="23-strategia-operativa">
+<h2>Strategia operativa</h2>
+<p>Quando leggiamo il proof state, procediamo dall&#x27;esterno verso l&#x27;interno.</p>
+<ul><li>Se il goal inizia con <code>∀</code>, introduciamo una cosa arbitraria.</li><li>Se abbiamo un&#x27;assunzione con <code>∀</code>, la applichiamo al termine necessario.</li><li>Se il goal inizia con <code>∃</code>, scegliamo un testimone.</li><li>Se abbiamo un&#x27;assunzione con <code>∃</code>, la eliminiamo e ragioniamo su un testimone arbitrario.</li><li>Poi continuiamo con le regole dei connettivi già studiate.</li></ul>
+</section>
+<section class="slide content" id="24-fonti">
+<h2>Fonti</h2>
+<p class="source"><a href="https://leanprover.github.io/logic_and_proof_lean3/nd_quickref.html">Jeremy Avigad, Robert Y. Lewis, Floris van Doorn, Logic and Proof: Natural Deduction Rules</a></p>
+    <p class="source"><a href="https://leanprover.github.io/logic_and_proof_lean3/natural_deduction_for_first_order_logic.html">Jeremy Avigad, Robert Y. Lewis, Floris van Doorn, Natural Deduction for First Order Logic</a></p>
+    <p class="source"><a href="https://lean-lang.org/doc/reference/latest/Basic-Propositions/Quantifiers/">The Lean Language Reference, Quantifiers</a></p>
+    <p class="source"><a href="https://leanprover.github.io/logic_and_proof_lean3/first_order_logic_in_lean.html">Logic and Proof, First Order Logic in Lean</a></p>
+</section>
+</main>
+<div class="counter"></div>
+<script>
+
+const slides = Array.from(document.querySelectorAll("section.slide"));
+const counter = document.querySelector(".counter");
+const scroller = document.querySelector("main");
+
+function activeIndex() {
+  const y = scroller.scrollTop;
+  let best = 0;
+  let bestDist = Infinity;
+  slides.forEach((slide, i) => {
+    const distance = Math.abs(slide.offsetTop - y);
+    if (distance < bestDist) {
+      best = i;
+      bestDist = distance;
+    }
+  });
+  return best;
+}
+
+function updateCounter() {
+  if (counter) counter.textContent = `${activeIndex() + 1} / ${slides.length}`;
+}
+
+function go(delta) {
+  const index = Math.max(0, Math.min(slides.length - 1, activeIndex() + delta));
+  slides[index].scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  } else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    slides[0].scrollIntoView({ behavior: "smooth" });
+  } else if (event.key === "End") {
+    event.preventDefault();
+    slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+scroller.addEventListener("scroll", updateCounter);
+updateCounter();
+
+</script>
+</body>
+</html>
