@@ -153,6 +153,7 @@ nav a { margin-right: 1rem; color: var(--ink); }
 <nav><a href="../index.html">Home</a><a href="index.html">Indice</a><a href="Lecture05-slides.html">Slide</a><a href="Lecture05-book.pdf">Lecture notes PDF</a><a href="Lecture05-classroom.lean">Lean in classe</a><a href="Lecture05-exercises.lean">Esercizi</a><a href="Lecture05-solutions.lean">Soluzioni</a></nav>
 
 <h1>Lezione 5: Regole dei quantificatori</h1>
+<figure class="lecture-video"><video controls preload="metadata" data-hls-src="Corso_Lean_Lezione_05.m3u8"><source src="Corso_Lean_Lezione_05.m3u8" type="application/vnd.apple.mpegurl"><a href="Corso_Lean_Lezione_05.m3u8">Registrazione video della Lezione 5</a></video><figcaption>Registrazione video della Lezione 5</figcaption></figure>
 <h2>1. Scopo della lezione</h2>
 <p>Riprendiamo le formalizzazioni della Lezione 4 e introduciamo le regole di deduzione naturale per <code>∀</code> e <code>∃</code>. Prima completiamo gli esempi con funzioni e quantificatori annidati. Poi studiamo come costruire e usare dimostrazioni universali ed esistenziali, comprese le condizioni che rendono valide le quattro regole. Infine combiniamo i quantificatori con i connettivi già noti.</p>
 <p>Come ripasso, confrontiamo quattro forme ricorrenti:</p>
@@ -502,6 +503,21 @@ x : Cosa
 
 </main>
 
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<script>
+document.querySelectorAll("video[data-hls-src]").forEach(video => {
+  const src = video.getAttribute("data-hls-src");
+  if (!src) return;
+  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = src;
+  } else if (window.Hls && Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(src);
+    hls.attachMedia(video);
+  }
+});
+</script>
 
 </body>
 </html>
