@@ -198,7 +198,7 @@ blockquote {
 </section>
 <section class="slide content" id="2-struttura-della-lezione">
 <h2>Struttura della lezione</h2>
-<ul><li>Vediamo come definire tipi induttivamente e costruiamo i nostri numeri naturali.</li><li>Introduciamo le dimostrazioni per induzione e alcune tattiche utili in matematica.</li><li>Automatizziamo alcune dimostrazioni con <code>simp</code>.</li></ul>
+<ul><li>Vediamo come definire tipi induttivamente e costruiamo i nostri numeri naturali.</li><li>Introduciamo le dimostrazioni per induzione e alcune tattiche utili in matematica.</li><li>Concludiamo con una prima dimostrazione per induzione.</li></ul>
 </section>
 <section class="slide content" id="3-promemoria-che-cos-l-induzione">
 <h2>Promemoria: che cos&#x27;è l&#x27;induzione?</h2>
@@ -334,66 +334,14 @@ blockquote {
 <p>Nel proof script:</p>
 <ul><li><code>induction n with</code> sceglie <code>n</code> come variabile d&#x27;induzione.</li><li><code>| zero =&gt;</code> apre il caso base.</li><li><code>| succ n ih =&gt;</code> introduce il predecessore <code>n</code> e l&#x27;ipotesi induttiva <code>ih</code>.</li><li>ogni ramo deve dimostrare la proprietà per il costruttore corrispondente.</li></ul>
 </section>
-<section class="slide content" id="25-esercizio-il-successore-nella-somma">
-<h2>Esercizio: il successore nella somma</h2>
-<p>Vogliamo dimostrare l&#x27;enunciato:</p>
-<p><code>lecture06_succ_somma (m n : Naturale) :</code></p>
-<p><code>somma (succ m) n = succ (somma m n)</code>.</p>
-<ul><li>Su quale argomento ricorre la definizione di <code>somma</code>?</li><li>Su quale variabile conviene quindi fare induzione?</li></ul>
+<section class="slide content" id="25-dove-siamo-arrivati">
+<h2>Dove siamo arrivati</h2>
+<p>Abbiamo definito un tipo induttivo e funzioni ricorsive sui nostri naturali. Abbiamo poi usato <code>rfl</code>, <code>unfold</code>, <code>rw</code> e una prima dimostrazione per induzione.</p>
+<p>Il risultato conclusivo è:</p>
+<p><code>lecture06_zero_somma (n : Naturale) : somma zero n = n</code>.</p>
+<p>Nella prossima lezione useremo la stessa struttura per dimostrare altre proprietà della somma e introdurre <code>simp</code>.</p>
 </section>
-<section class="slide content" id="26-risultati-disponibili-per-le-dimostrazioni">
-<h2>Risultati disponibili per le dimostrazioni</h2>
-<p>Da questo punto possiamo usare con <code>rw</code> le equazioni già dimostrate:</p>
-<ul><li><code>lecture06_somma_zero_destra (m : Naturale) : somma m zero = m</code>.</li><li><code>lecture06_somma_succ_destra (m n : Naturale) : somma m (succ n) = succ (somma m n)</code>.</li><li><code>lecture06_doppio_succ (n : Naturale) : doppio (succ n) = succ (succ (doppio n))</code>.</li></ul>
-<p>Quando scriviamo <code>rw [nome]</code>, Lean cerca nel goal un&#x27;istanza del lato sinistro dell&#x27;uguaglianza nominata.</p>
-</section>
-<section class="slide content" id="27-associativit">
-<h2>Associatività</h2>
-<p>L&#x27;<strong>associatività</strong> dice che il modo di raggruppare tre addendi non cambia il risultato:</p>
-<p><code>lecture06_somma_assoc (a b c : Naturale) :</code></p>
-<p><code>somma (somma a b) c = somma a (somma b c)</code>.</p>
-<p>Scegliamo <code>c</code> perché occupa il secondo argomento della somma esterna a sinistra.</p>
-</section>
-<section class="slide content" id="28-risultati-disponibili-per-la-commutativit">
-<h2>Risultati disponibili per la commutatività</h2>
-<p>Prima di affrontare la commutatività abbiamo già dimostrato:</p>
-<ul><li><code>lecture06_zero_somma (n : Naturale) : somma zero n = n</code>.</li><li><code>lecture06_succ_somma (m n : Naturale) : somma (succ m) n = succ (somma m n)</code>.</li><li><code>lecture06_somma_succ_destra (m n : Naturale) : somma m (succ n) = succ (somma m n)</code>.</li></ul>
-</section>
-<section class="slide content" id="29-commutativit">
-<h2>Commutatività</h2>
-<p>La <strong>commutatività</strong> dice che scambiare i due addendi non cambia il risultato:</p>
-<p><code>lecture06_somma_comm (a b : Naturale) : somma a b = somma b a</code>.</p>
-<p>Facciamo induzione su <code>b</code>, che è il secondo argomento del lato sinistro e permette di ridurlo secondo la definizione di <code>somma</code>. A destra <code>b</code> compare invece come primo argomento: il lemma <code>succ_somma</code> compensa questa asimmetria. Serve anche <code>zero_somma</code> per il caso base.</p>
-</section>
-<section class="slide content" id="30-che-cosa-fa-simp">
-<h2>Che cosa fa simp?</h2>
-<p><code>simp</code> semplifica applicando equazioni orientate e svolgendo computazioni elementari.</p>
-<ul><li><code>rw</code> indica una precisa riscrittura.</li><li><code>simp only [lemmi]</code> usa soltanto i lemmi elencati.</li><li><code>simp [lemmi]</code> aggiunge quei lemmi alle regole standard del semplificatore.</li></ul>
-</section>
-<section class="slide content" id="31-controllare-il-simp-set">
-<h2>Controllare il simp-set</h2>
-<p>Il <strong>simp-set</strong> è l&#x27;insieme delle regole disponibili al semplificatore.</p>
-<ul><li><code>simp [lemma]</code> aggiunge una regola per quel comando.</li><li><code>attribute [local simp] lemma</code> la rende disponibile nella sezione corrente.</li><li><code>@[simp]</code> la registra per il resto del modulo.</li></ul>
-<p>Una buona regola <code>simp</code> conduce verso una forma chiaramente più semplice. La commutatività scambia due argomenti senza ridurre la complessità dell&#x27;espressione. L&#x27;associatività sposta soltanto le parentesi. Nessuna delle due indica da sola una forma evidentemente più semplice. Quando ci servono, le applichiamo esplicitamente con <code>rw</code> nella direzione desiderata.</p>
-</section>
-<section class="slide content" id="32-risultati-disponibili-per-la-dimostrazione-conclusiva">
-<h2>Risultati disponibili per la dimostrazione conclusiva</h2>
-<p>Per l&#x27;esercizio conclusivo abbiamo già dimostrato:</p>
-<ul><li><code>lecture06_somma_succ_destra (m n : Naturale) : somma m (succ n) = succ (somma m n)</code>.</li><li><code>lecture06_doppio_succ (n : Naturale) : doppio (succ n) = succ (succ (doppio n))</code>.</li></ul>
-</section>
-<section class="slide content" id="33-esercizio-conclusivo">
-<h2>Esercizio conclusivo</h2>
-<p>Vogliamo dimostrare che il doppio di una somma è la somma dei doppi:</p>
-<p><code>lecture06_doppio_somma (m n : Naturale) :</code></p>
-<p><code>doppio (somma m n) = somma (doppio m) (doppio n)</code>.</p>
-<ul><li>Su quale variabile conviene fare induzione?</li><li>Quali equazioni descrivono il caso successore?</li><li>In quale momento possiamo usare l&#x27;ipotesi induttiva?</li></ul>
-<p>La sottoespressione che blocca la computazione è <code>somma m n</code>: poiché <code>somma</code> analizza il secondo argomento, la candidata naturale è <code>n</code>. Dobbiamo ancora controllare che <code>ih</code> corrisponda alla chiamata ricorsiva del passo successore.</p>
-</section>
-<section class="slide content" id="34-strategia-operativa">
-<h2>Strategia operativa</h2>
-<ul><li>Individuiamo i costruttori del tipo.</li><li>Definiamo le funzioni seguendo quei costruttori.</li><li>Proviamo prima se il goal si risolve per computazione con <code>rfl</code>.</li><li>Se abbiamo uguaglianze utili, riscriviamo con <code>rw</code>.</li><li>Se il risultato riguarda tutti i valori ricorsivi, cerchiamo la variabile d&#x27;induzione.</li><li>Automatizziamo con <code>simp only</code> o <code>simp</code>.</li></ul>
-</section>
-<section class="slide content" id="35-fonti">
+<section class="slide content" id="26-fonti">
 <h2>Fonti</h2>
 <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Inductive-Types/">Theorem Proving in Lean 4, Inductive Types</a></p>
     <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Induction-and-Recursion/">Theorem Proving in Lean 4, Induction and Recursion</a></p>

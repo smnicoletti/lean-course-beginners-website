@@ -74,34 +74,4 @@ theorem add_one_left (n : Natural) :
     add one n = succ n := by
   sorry
 
--- 6. Prove the analogous result for two by induction.
-theorem add_two_left (n : Natural) :
-    add two n = succ (succ n) := by
-  sorry
-
--- 7. Prove this particular form of associativity. Choose the induction
--- variable by looking at the additions that must reduce.
-theorem add_with_one_assoc (m n : Natural) :
-    add (add m one) n = add m (add one n) := by
-  sorry
-
--- 8. Combine addition and double in an induction proof.
-theorem double_add_one (n : Natural) :
-    double (add one n) = add two (double n) := by
-  sorry
-
--- ============================================================
--- INDUCTION ON MULTIPLICATION AND SIMPLIFICATION
--- ============================================================
-
--- 9. After completing `multiply`, prove by induction that multiplying one by
--- every natural number gives that natural number.
-theorem multiply_one_left (n : Natural) :
-    multiply one n = n := by
-  sorry
-
--- 10. Use `simp only` to close the following goal.
-example (n : Natural) : add one n = succ n := by
-  sorry
-
 end Course.Shared.Lecture06.EN.Exercises

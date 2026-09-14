@@ -79,34 +79,4 @@ theorem somma_uno_sinistra (n : Naturale) :
     somma uno n = succ n := by
   sorry
 
--- 6. Dimostrare per induzione l'analogo risultato per due.
-theorem somma_due_sinistra (n : Naturale) :
-    somma due n = succ (succ n) := by
-  sorry
-
--- 7. Dimostrare questa particolare forma di associatività. Scegliere la
--- variabile d'induzione guardando le somme che devono ridursi.
-theorem somma_con_uno_assoc (m n : Naturale) :
-    somma (somma m uno) n = somma m (somma uno n) := by
-  sorry
-
--- 8. Combinare somma e doppio in una dimostrazione per induzione.
-theorem doppio_somma_uno (n : Naturale) :
-    doppio (somma uno n) = somma due (doppio n) := by
-  sorry
-
--- ============================================================
--- INDUZIONE SULLA MOLTIPLICAZIONE E SEMPLIFICAZIONE
--- ============================================================
-
--- 9. Dopo avere completato `prodotto`, dimostrare per induzione che uno
--- moltiplicato per ogni naturale restituisce quel naturale.
-theorem prodotto_uno_sinistra (n : Naturale) :
-    prodotto uno n = n := by
-  sorry
-
--- 10. Usare `simp only` per chiudere il goal seguente.
-example (n : Naturale) : somma uno n = succ n := by
-  sorry
-
 end Course.Shared.Lecture06.IT.Exercises
