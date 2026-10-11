@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="it" data-generator="verso-slides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lezione 7 - Induzione, semplificazione e verifica del software</title>
+<style>
+
+:root {
+  --ink: #111827;
+  --muted: #536170;
+  --paper: #f7f9fb;
+  --panel: #ffffff;
+  --lean-blue: #0b5cad;
+  --lean-cyan: #00a6c8;
+  --lean-green: #13a05f;
+  --line: #d8e0e8;
+  --code: #f4f7fb;
+  --shadow: rgba(15, 23, 42, .12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, var(--lean-blue) 0 10px, transparent 10px),
+    radial-gradient(circle at 90% 10%, rgba(0,166,200,.10), transparent 32rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+a { color: var(--lean-blue); font-weight: 650; }
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+section.slide {
+  position: relative;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6vh 8vw 7vh calc(8vw + 10px);
+  border-bottom: 1px solid var(--line);
+}
+section.slide.title {
+  background:
+    linear-gradient(135deg, rgba(11,92,173,.96), rgba(0,166,200,.88)),
+    var(--lean-blue);
+  color: white;
+}
+section.slide.title h1,
+section.slide.title h2 { color: white; max-width: 980px; }
+section.slide.title .kicker,
+section.slide.title .note { color: rgba(255,255,255,.84); }
+section.slide:not(.title)::before {
+  content: "Lean 4";
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  color: var(--lean-blue);
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+h1, h2, h3 {
+  margin: 0 0 .45rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+h1, h2 {
+  max-width: 1120px;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  color: var(--lean-blue);
+}
+h3 { font-size: clamp(1.35rem, 2vw, 2.1rem); }
+p, li, td, th { font-size: clamp(1.18rem, 1.7vw, 1.7rem); }
+p { max-width: 1060px; margin: .25rem 0; }
+ul { max-width: 1080px; padding-left: 1.2em; margin: .35rem 0; }
+li { margin: .35rem 0; }
+table {
+  border-collapse: collapse;
+  max-width: 1120px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: .7rem .9rem;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--lean-blue);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  text-transform: uppercase;
+}
+pre, .hl.lean {
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--lean-blue);
+  border-radius: 7px;
+  padding: .9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(.78rem, 1vw, 1.02rem);
+  box-shadow: 0 10px 22px rgba(15,23,42,.08);
+}
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+blockquote {
+  max-width: 980px;
+  border-left: 7px solid var(--lean-cyan);
+  margin: .6rem 0;
+  padding: .65rem 0 .65rem 1.2rem;
+  background: rgba(255,255,255,.7);
+}
+.kicker {
+  color: var(--lean-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: clamp(.9rem, 1.1vw, 1.1rem);
+}
+.note, .source { color: var(--muted); font-size: clamp(.88rem, 1.05vw, 1rem); }
+.counter {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1rem;
+  color: var(--muted);
+  font-size: .9rem;
+  z-index: 5;
+}
+.lean-rendered {
+  max-width: 1160px;
+}
+.lean-rendered .hl.lean {
+  display: block;
+  white-space: pre-wrap;
+}
+.tactic-toggle { margin-left: .35rem; }
+.tactic label {
+  cursor: pointer;
+  border-bottom: 2px solid var(--lean-green);
+}
+.tactic-state {
+  display: none;
+  white-space: normal;
+  margin: .7rem 0 0;
+  padding: .8rem;
+  background: var(--panel);
+  border: 1px solid var(--lean-green);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(15,23,42,.10);
+}
+.tactic-toggle:checked + .tactic-state { display: block; }
+.goal + .goal {
+  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .5rem;
+}
+.hypotheses {
+  display: block;
+  margin-bottom: .4rem;
+}
+.hypothesis { display: block; }
+.conclusion {
+  display: block;
+  font-weight: 700;
+}
+.token.keyword { color: #7c3aed; font-weight: 700; }
+.token.const { color: var(--lean-blue); }
+.token.var { color: #2563eb; }
+.token.sort { color: #b45309; }
+@media (max-width: 720px) {
+  section.slide { padding: 5vh 5vw 7vh calc(5vw + 10px); }
+  section.slide:not(.title)::before { display: none; }
+  h1, h2 { font-size: clamp(1.8rem, 10vw, 3rem); }
+}
+@media print {
+  main { height: auto; overflow: visible; scroll-snap-type: none; }
+  section.slide { min-height: auto; break-inside: avoid; }
+  .counter { display: none; }
+}
+
+</style>
+</head>
+<body class="verso-slides">
+<main>
+<section class="slide title" id="1-reasoning-proof-and-formalization-with-lean-4">
+<h2>Reasoning, Proof, and Formalization with Lean 4</h2>
+<p>Lezione 7 - Induzione, semplificazione e verifica del software</p>
+<p>Stefano M. Nicoletti</p>
+</section>
+<section class="slide content" id="2-struttura-della-lezione">
+<h2>Struttura della lezione</h2>
+<ul><li>Riprendiamo la dimostrazione per induzione della Lezione 6.</li><li>Dimostriamo proprietà generali della somma.</li><li>Introduciamo il semplificatore <code>simp</code>.</li><li>Combiniamo induzione, riscrittura e semplificazione.</li><li>Applichiamo questi strumenti alla verifica di un algoritmo.</li></ul>
+</section>
+<section class="slide content" id="3-ripasso-definizioni-e-risultati-disponibili">
+<h2>Ripasso: definizioni e risultati disponibili</h2>
+<p>Usiamo nuovamente il tipo <code>Naturale</code>, la somma ricorsiva sul secondo argomento e il doppio.</p>
+<p>Dalla Lezione 6 abbiamo:</p>
+<ul><li><code>somma m zero = m</code>.</li><li><code>somma m (succ n) = succ (somma m n)</code>.</li><li><code>doppio (succ n) = succ (succ (doppio n))</code>.</li><li><code>somma zero n = n</code>.</li></ul>
+</section>
+<section class="slide content" id="4-esercizio-il-successore-nella-somma">
+<h2>Esercizio: il successore nella somma</h2>
+<p>Vogliamo dimostrare:</p>
+<p><code>lecture07_succ_somma (m n : Naturale) :</code></p>
+<p><code>somma (succ m) n = succ (somma m n)</code>.</p>
+<ul><li>Su quale argomento ricorre la definizione di <code>somma</code>?</li><li>Su quale variabile conviene quindi fare induzione?</li></ul>
+</section>
+<section class="slide content" id="5-associativit">
+<h2>Associatività</h2>
+<p>L&#x27;<strong>associatività</strong> dice che il modo di raggruppare tre addendi non cambia il risultato:</p>
+<p><code>lecture07_somma_assoc (a b c : Naturale) :</code></p>
+<p><code>somma (somma a b) c = somma a (somma b c)</code>.</p>
+<p>Scegliamo <code>c</code> perché occupa il secondo argomento della somma esterna a sinistra.</p>
+</section>
+<section class="slide content" id="6-risultati-disponibili-per-le-dimostrazioni">
+<h2>Risultati disponibili per le dimostrazioni</h2>
+<p>Possiamo ora usare con <code>rw</code>:</p>
+<ul><li><code>lecture07_somma_zero_destra (m : Naturale) : somma m zero = m</code>.</li><li><code>lecture07_somma_succ_destra (m n : Naturale) : somma m (succ n) = succ (somma m n)</code>.</li><li><code>lecture07_zero_somma (n : Naturale) : somma zero n = n</code>.</li><li><code>lecture07_succ_somma (m n : Naturale) : somma (succ m) n = succ (somma m n)</code>.</li><li><code>lecture07_doppio_succ (n : Naturale) : doppio (succ n) = succ (succ (doppio n))</code>.</li></ul>
+</section>
+<section class="slide content" id="7-commutativit">
+<h2>Commutatività</h2>
+<p>La <strong>commutatività</strong> dice che scambiare i due addendi non cambia il risultato:</p>
+<p><code>lecture07_somma_comm (a b : Naturale) : somma a b = somma b a</code>.</p>
+<p>Facciamo induzione su <code>b</code>. A sinistra è il secondo argomento di <code>somma</code>, mentre a destra è il primo. Useremo quindi anche <code>succ_somma</code>.</p>
+</section>
+<section class="slide content" id="8-che-cosa-fa-simp">
+<h2>Che cosa fa simp?</h2>
+<p><code>simp</code> semplifica applicando equazioni orientate e svolgendo computazioni elementari.</p>
+<ul><li><code>rw</code> indica una precisa riscrittura.</li><li><code>simp only [lemmi]</code> usa soltanto i lemmi elencati.</li><li><code>simp [lemmi]</code> aggiunge quei lemmi alle regole standard.</li></ul>
+</section>
+<section class="slide content" id="9-controllare-il-simp-set">
+<h2>Controllare il simp-set</h2>
+<p>Il <strong>simp-set</strong> è l&#x27;insieme delle regole disponibili al semplificatore.</p>
+<ul><li><code>simp [lemma]</code> aggiunge una regola per quel comando.</li><li><code>attribute [local simp] lemma</code> la rende disponibile nella sezione corrente.</li><li><code>@[simp]</code> la registra per il resto del modulo.</li></ul>
+<p>Associatività e commutatività non indicano da sole una forma più semplice. Quando servono, le applichiamo con <code>rw</code> nella direzione desiderata.</p>
+</section>
+<section class="slide content" id="10-risultati-per-la-dimostrazione-conclusiva">
+<h2>Risultati per la dimostrazione conclusiva</h2>
+<p>Useremo:</p>
+<ul><li><code>somma m (succ n) = succ (somma m n)</code>.</li><li><code>doppio (succ n) = succ (succ (doppio n))</code>.</li></ul>
+</section>
+<section class="slide content" id="11-esercizio-conclusivo">
+<h2>Esercizio conclusivo</h2>
+<p>Vogliamo dimostrare che il doppio di una somma è la somma dei doppi:</p>
+<p><code>lecture07_doppio_somma (m n : Naturale) :</code></p>
+<p><code>doppio (somma m n) = somma (doppio m) (doppio n)</code>.</p>
+<ul><li>Su quale variabile conviene fare induzione?</li></ul>
+</section>
+<section class="slide content" id="12-dalla-matematica-alla-verifica-del-software">
+<h2>Dalla matematica alla verifica del software</h2>
+<p>Un programma riceve un input e produce un output. Per <strong>verificarlo</strong>:</p>
+<ul><li>definiamo con precisione il programma.</li><li>formuliamo una proprietà attesa del risultato, cioè la <strong>specifica formale</strong>.</li><li>dimostriamo che la proprietà vale per ogni input possibile.</li></ul>
+<p>Gli esempi non bastano: possono mostrare un errore, ma non coprono tutti gli input. Una dimostrazione universale fornisce invece una garanzia generale.</p>
+</section>
+<section class="slide content" id="13-un-tipo-induttivo-per-le-liste">
+<h2>Un tipo induttivo per le liste</h2>
+<p>Una lista di elementi di tipo <code>α</code> può essere costruita in due modi:</p>
+<ul><li><code>vuota</code>: la lista senza elementi.</li><li><code>cons x xs</code>: un elemento <code>x</code> seguito da una lista <code>xs</code>.</li></ul>
+<p><code>inductive Lista (α : Type) where</code></p>
+<p><code>| vuota</code></p>
+<p><code>| cons (testa : α) (coda : Lista α)</code></p>
+<p>Il parametro <code>α</code> rappresenta il tipo degli elementi. La stessa definizione costruisce liste di naturali, stringhe o altri tipi. Questo riuso della stessa struttura per tipi diversi si chiama <strong>polimorfismo parametrico</strong>.</p>
+</section>
+<section class="slide content" id="14-costruire-una-lista">
+<h2>Costruire una lista</h2>
+<p>Con i costruttori possiamo rappresentare, per esempio, la lista che contiene <code>zero</code>, <code>uno</code> e <code>due</code>:</p>
+<p><code>cons zero (cons uno (cons due vuota))</code></p>
+<p>La struttura esplicita una <strong>testa</strong> e una <strong>coda</strong>:</p>
+<ul><li>la testa è il primo elemento.</li><li>la coda è una lista più piccola.</li><li>la ricorsione e l&#x27;induzione possono procedere sulla coda.</li></ul>
+</section>
+<section class="slide content" id="15-concatenare-due-liste">
+<h2>Concatenare due liste</h2>
+<p>Prima di rovesciare una lista definiamo la concatenazione:</p>
+<p>Nel file Lean scriviamo il parametro <code>α : Type</code> tra parentesi graffe. Le graffe indicano che è implicito: Lean ricava <code>α</code> dai tipi di <code>xs</code> e <code>ys</code>.</p>
+<p>Per un tipo <code>α</code>, definiamo:</p>
+<p><code>def concatena (xs ys : Lista α) : Lista α :=</code></p>
+<p><code>match xs with</code></p>
+<p><code>| vuota =&gt; ys</code></p>
+<p><code>| cons x xs =&gt; cons x (concatena xs ys)</code></p>
+<p>La funzione analizza la prima lista. Se non è vuota, conserva la testa e concatena ricorsivamente la coda con <code>ys</code>.</p>
+</section>
+<section class="slide content" id="16-esempio-concatenare-due-liste">
+<h2>Esempio: concatenare due liste</h2>
+<p>Per leggere più facilmente l&#x27;esempio, rappresentiamo le liste tra parentesi quadre:</p>
+<p><code>xs = [zero, uno]</code></p>
+<p><code>ys = [due]</code></p>
+<p>La definizione attraversa <code>xs</code> da sinistra a destra:</p>
+<p><code>concatena [zero, uno] [due]</code></p>
+<p><code>= zero :: (concatena [uno] [due])</code></p>
+<p><code>= zero :: (uno :: (concatena [] [due]))</code></p>
+<p><code>= zero :: (uno :: [due])</code></p>
+<p><code>= [zero, uno, due]</code></p>
+<p>Qui <code>[]</code> rappresenta la lista vuota e <code>x :: xs</code> rappresenta <code>cons x xs</code>. È una notazione illustrativa, ma nel file Lean usiamo <code>vuota</code>, <code>cons</code> e <code>concatena</code>.</p>
+</section>
+<section class="slide content" id="17-un-algoritmo-per-rovesciare-una-lista">
+<h2>Un algoritmo per rovesciare una lista</h2>
+<p>Nel caso vuoto il risultato è ancora vuoto. Nel caso <code>cons</code>, rovesciamo la coda e collochiamo la testa in fondo:</p>
+<p>Per un tipo <code>α</code>, definiamo:</p>
+<p><code>def rovescia (xs : Lista α) : Lista α :=</code></p>
+<p><code>match xs with</code></p>
+<p><code>| vuota =&gt; vuota</code></p>
+<p><code>| cons x xs =&gt;</code></p>
+<p><code>    concatena (rovescia xs) (cons x vuota)</code></p>
+<p>La chiamata ricorsiva usa la coda <code>xs</code>, che contiene un costruttore <code>cons</code> in meno.</p>
+</section>
+<section class="slide content" id="18-esempio-rovesciare-una-lista">
+<h2>Esempio: rovesciare una lista</h2>
+<p>Usiamo la notazione illustrativa con parentesi quadre:</p>
+<p><code>rovescia [zero, uno]</code></p>
+<p><code>= concatena (rovescia [uno]) [zero]</code></p>
+<p><code>= concatena (concatena (rovescia []) [uno]) [zero]</code></p>
+<p><code>= concatena (concatena [] [uno]) [zero]</code></p>
+<p><code>= concatena [uno] [zero]</code></p>
+<p><code>= [uno, zero]</code></p>
+<p>La funzione rovescia prima la coda <code>[uno]</code>, poi colloca <code>zero</code> in fondo.</p>
+</section>
+<section class="slide content" id="19-quale-propriet-vogliamo-verificare">
+<h2>Quale proprietà vogliamo verificare?</h2>
+<p>Una proprietà fondamentale è che rovesciare due volte restituisca la lista iniziale:</p>
+<p>Per ogni tipo <code>α</code> e ogni <code>xs : Lista α</code>:</p>
+<p><code>rovescia (rovescia xs) = xs</code>.</p>
+<p>Non verifichiamo soltanto una lista concreta. Il quantificatore implicito su <code>xs</code> richiede che la proprietà valga per ogni <code>Lista α</code>.</p>
+<p>Questa è una proprietà di correttezza importante, non una specifica completa di ogni aspetto dell&#x27;algoritmo.</p>
+</section>
+<section class="slide content" id="20-propriet-verificata-e-specifica-completa">
+<h2>Proprietà verificata e specifica completa</h2>
+<p>Una <strong>proprietà verificata</strong> stabilisce un fatto sul programma. Una <strong>specifica completa</strong> dovrebbe descrivere abbastanza precisamente il comportamento atteso da escludere implementazioni scorrette.</p>
+<p>L&#x27;equazione</p>
+<p><code>rovescia (rovescia xs) = xs</code></p>
+<p>non basta da sola. Anche la funzione identità, che restituisce sempre <code>xs</code> senza rovesciarla, soddisfa la stessa equazione.</p>
+<p>Per caratterizzare meglio <code>rovescia</code> servono altre proprietà, per esempio:</p>
+<p><code>rovescia (concatena xs ys) =</code></p>
+<p><code>concatena (rovescia ys) (rovescia xs)</code>.</p>
+</section>
+<section class="slide content" id="21-lemmi-utili-per-la-propriet-finale">
+<h2>Lemmi utili per la proprietà finale</h2>
+<p>Prima di dimostrare <code>rovescia (rovescia xs) = xs</code>, dimostriamo alcuni lemmi che ci saranno utili:</p>
+<ul><li><code>concatena xs vuota = xs</code>.</li><li><code>concatena (concatena xs ys) zs = concatena xs (concatena ys zs)</code>.</li><li><code>rovescia (concatena xs ys) = concatena (rovescia ys) (rovescia xs)</code>.</li></ul>
+</section>
+<section class="slide content" id="22-verificare-rovescia">
+<h2>Verificare rovescia</h2>
+<p>Per dimostrare <code>rovescia (rovescia xs) = xs</code> facciamo induzione su <code>xs</code>:</p>
+<ul><li>caso <code>vuota</code>: la definizione si riduce direttamente.</li><li>caso <code>cons x xs</code>: apriamo <code>rovescia</code>.</li><li>usiamo il lemma su <code>rovescia</code> e <code>concatena</code>.</li><li>usiamo l&#x27;ipotesi induttiva sulla coda <code>xs</code>.</li></ul>
+<p>La forma del dato guida sia l&#x27;esecuzione dell&#x27;algoritmo sia la sua dimostrazione.</p>
+</section>
+<section class="slide content" id="23-che-cosa-abbiamo-verificato">
+<h2>Che cosa abbiamo verificato?</h2>
+<p>Abbiamo collegato tre livelli:</p>
+<ul><li><strong>struttura dei dati</strong>: i costruttori <code>vuota</code> e <code>cons</code>.</li><li><strong>programma</strong>: le definizioni ricorsive <code>concatena</code> e <code>rovescia</code>.</li><li><strong>proprietà di correttezza</strong>: proposizioni dimostrate per ogni input.</li></ul>
+<p>In Lean programmi e dimostrazioni convivono nello stesso linguaggio, e il kernel controlla entrambi.</p>
+</section>
+<section class="slide content" id="24-strategia-operativa">
+<h2>Strategia operativa</h2>
+<ul><li>Leggiamo quale argomento è analizzato dalla definizione.</li><li>Proviamo se il goal si riduce con <code>rfl</code>.</li><li>Usiamo con <code>rw</code> le uguaglianze già dimostrate.</li><li>Se resta una variabile nell&#x27;argomento analizzato, consideriamola per l&#x27;induzione.</li><li>Automatizziamo con <code>simp only</code> o <code>simp</code>.</li></ul>
+</section>
+<section class="slide content" id="25-fonti">
+<h2>Fonti</h2>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Inductive-Types/">Theorem Proving in Lean 4, Inductive Types</a></p>
+    <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Induction-and-Recursion/">Theorem Proving in Lean 4, Induction and Recursion</a></p>
+    <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Tactics/">Theorem Proving in Lean 4, Tactics</a></p>
+    <p class="source"><a href="https://adam.math.hhu.de/#/g/leanprover-community/nng4">Natural Number Game</a></p>
+    <p class="source"><a href="https://research.vu.nl/en/courses/logical-verification-5/">VU Amsterdam, Logical Verification</a></p>
+    <p class="source"><a href="https://research.utwente.nl/en/publications/concise-guide-to-software-verification-from-model-checking-to-ann/">Huisman e Wijs, Concise Guide to Software Verification</a></p>
+    <p class="source"><a href="https://arxiv.org/abs/cs/0312036">Chockler, Halpern e Kupferman, What Causes a System to Satisfy a Specification?</a></p>
+</section>
+</main>
+<div class="counter"></div>
+<script>
+
+const slides = Array.from(document.querySelectorAll("section.slide"));
+const counter = document.querySelector(".counter");
+const scroller = document.querySelector("main");
+
+function activeIndex() {
+  const y = scroller.scrollTop;
+  let best = 0;
+  let bestDist = Infinity;
+  slides.forEach((slide, i) => {
+    const distance = Math.abs(slide.offsetTop - y);
+    if (distance < bestDist) {
+      best = i;
+      bestDist = distance;
+    }
+  });
+  return best;
+}
+
+function updateCounter() {
+  if (counter) counter.textContent = `${activeIndex() + 1} / ${slides.length}`;
+}
+
+function go(delta) {
+  const index = Math.max(0, Math.min(slides.length - 1, activeIndex() + delta));
+  slides[index].scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  } else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    slides[0].scrollIntoView({ behavior: "smooth" });
+  } else if (event.key === "End") {
+    event.preventDefault();
+    slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+scroller.addEventListener("scroll", updateCounter);
+updateCounter();
+
+</script>
+</body>
+</html>
