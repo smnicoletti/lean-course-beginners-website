@@ -93,36 +93,59 @@ example (n : Natural) : add one n = succ n := by
 
 end LocalSimplification
 
--- ============================================================
--- VERIFYING A PROGRAM ON LISTS
--- ============================================================
-
-inductive CustomList (α : Type) where
-  | empty
-  | cons (head : α) (tail : CustomList α)
-
-open CustomList
-
-def mapList {α β : Type} (f : α → β) (xs : CustomList α) : CustomList β :=
-  match xs with
-  | empty => empty
-  | cons x xs => cons (f x) (mapList f xs)
-
-theorem mapList_identity {α : Type} (xs : CustomList α) :
-    mapList (fun x => x) xs = xs := by
-  induction xs with
-  | empty =>
+theorem add_assoc (a b c : Natural) :
+    add (add a b) c = add a (add b c) := by
+  induction c with
+  | zero =>
       rfl
-  | cons x xs ih =>
-      simp [mapList, ih]
+  | succ c ih =>
+      rw [add_succ_right]
+      rw [add_succ_right]
+      rw [add_succ_right]
+      rw [ih]
 
-theorem mapList_composition
-    {α β γ : Type} (f : α → β) (g : β → γ) (xs : CustomList α) :
-    mapList g (mapList f xs) = mapList (fun x => g (f x)) xs := by
-  induction xs with
-  | empty =>
+theorem zero_add (n : Natural) : add zero n = n := by
+  induction n with
+  | zero =>
       rfl
-  | cons x xs ih =>
-      simp [mapList, ih]
+  | succ n ih =>
+      unfold add
+      rw [ih]
+
+theorem succ_add (m n : Natural) :
+    add (succ m) n = succ (add m n) := by
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      unfold add
+      rw [ih]
+
+theorem add_comm (a b : Natural) : add a b = add b a := by
+  induction b with
+  | zero =>
+      rw [zero_add]
+      rfl
+  | succ b ih =>
+      rw [add_succ_right]
+      rw [succ_add]
+      rw [ih]
+
+theorem double_succ (n : Natural) :
+    double (succ n) = succ (succ (double n)) := by
+  rfl
+
+theorem double_add (m n : Natural) :
+    double (add m n) = add (double m) (double n) := by
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      rw [add_succ_right]
+      rw [double_succ]
+      rw [double_succ]
+      rw [add_succ_right]
+      rw [add_succ_right]
+      rw [ih]
 
 end Course.Shared.Lecture07.EN.Solutions

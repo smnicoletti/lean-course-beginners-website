@@ -26,16 +26,17 @@ def doppio (n : Naturale) : Naturale :=
   | zero => zero
   | succ n => succ (succ (doppio n))
 
-def prodotto (m n : Naturale) : Naturale :=
-  match n with
-  | zero => zero
-  | succ n => somma m (prodotto m n)
+-- 1. Definire ricorsivamente il prodotto di due naturali. La definizione deve
+-- analizzare il secondo argomento, come fa `somma`.
+def prodotto (m n : Naturale) : Naturale := by
+  sorry
 
--- Risultati già ottenuti nella Lezione 6.
+-- Un risultato visto nella Lezione 6.
 theorem somma_succ_destra (m n : Naturale) :
     somma m (succ n) = succ (somma m n) := by
   rfl
 
+-- Riprendiamo inoltre un risultato proposto negli esercizi della Lezione 6.
 theorem somma_uno_sinistra (n : Naturale) :
     somma uno n = succ n := by
   induction n with
@@ -45,29 +46,29 @@ theorem somma_uno_sinistra (n : Naturale) :
       unfold somma
       rw [ih]
 
--- 1. Dimostrare per induzione l'analogo risultato per due.
+-- 2. Dimostrare per induzione l'analogo risultato per due.
 theorem somma_due_sinistra (n : Naturale) :
     somma due n = succ (succ n) := by
   sorry
 
--- 2. Dimostrare questa particolare forma di associatività. Scegliere la
+-- 3. Dimostrare questa particolare forma di associatività. Scegliere la
 -- variabile d'induzione guardando le somme che devono ridursi.
 theorem somma_con_uno_assoc (m n : Naturale) :
     somma (somma m uno) n = somma m (somma uno n) := by
   sorry
 
--- 3. Combinare somma e doppio in una dimostrazione per induzione.
+-- 4. Combinare somma e doppio in una dimostrazione per induzione.
 theorem doppio_somma_uno (n : Naturale) :
     doppio (somma uno n) = somma due (doppio n) := by
   sorry
 
--- 4. Dimostrare per induzione che uno moltiplicato per ogni naturale
+-- 5. Dimostrare per induzione che uno moltiplicato per ogni naturale
 -- restituisce quel naturale.
 theorem prodotto_uno_sinistra (n : Naturale) :
     prodotto uno n = n := by
   sorry
 
--- 5. Rendere `somma_uno_sinistra` disponibile nel simp-set soltanto dentro
+-- 6. Rendere `somma_uno_sinistra` disponibile nel simp-set soltanto dentro
 -- questa sezione. Chiudere poi il goal usando `simp`, senza nominare il lemma.
 section SemplificazioneLocale
 
@@ -76,35 +77,34 @@ example (n : Naturale) : somma uno n = succ n := by
 
 end SemplificazioneLocale
 
--- ============================================================
--- VERIFICA DI UN PROGRAMMA SU LISTE
--- ============================================================
-
-inductive Lista (α : Type) where
-  | vuota
-  | cons (testa : α) (coda : Lista α)
-
-open Lista
-
--- 6. Definire `mappa`: deve applicare `f` a ogni elemento della lista,
--- conservando la stessa struttura.
--- Per esempio, applicando `succ` alla lista `cons zero (cons uno vuota)`
--- dobbiamo ottenere `cons uno (cons due vuota)`.
-def mappa {α β : Type} (f : α → β) (xs : Lista α) : Lista β :=
+-- 7. Dimostrare l'associatività della somma. Scegliere la variabile
+-- d'induzione osservando quale argomento viene analizzato da `somma`.
+theorem somma_assoc (a b c : Naturale) :
+    somma (somma a b) c = somma a (somma b c) := by
   sorry
 
--- 7. Verificare che applicare la funzione identità a ogni elemento non
--- modifichi la lista. Usare l'induzione e `simp` con la definizione di `mappa`.
-theorem mappa_identita {α : Type} (xs : Lista α) :
-    mappa (fun x => x) xs = xs := by
+-- I due risultati seguenti permettono di trattare `zero` e `succ` quando
+-- compaiono nel primo argomento della somma.
+theorem zero_somma (n : Naturale) : somma zero n = n := by
   sorry
 
--- 8. Verificare che due applicazioni successive di `mappa` equivalgano a una
--- sola applicazione con la funzione composta. Anche qui usare induzione e
--- `simp`.
-theorem mappa_composizione
-    {α β γ : Type} (f : α → β) (g : β → γ) (xs : Lista α) :
-    mappa g (mappa f xs) = mappa (fun x => g (f x)) xs := by
+theorem succ_somma (m n : Naturale) :
+    somma (succ m) n = succ (somma m n) := by
+  sorry
+
+-- 8. Dimostrare la commutatività combinando le equazioni disponibili sui due
+-- argomenti della somma.
+theorem somma_comm (a b : Naturale) :
+    somma a b = somma b a := by
+  sorry
+
+theorem doppio_succ (n : Naturale) :
+    doppio (succ n) = succ (succ (doppio n)) := by
+  rfl
+
+-- 9. Dimostrazione conclusiva: il doppio di una somma è la somma dei doppi.
+theorem doppio_somma (m n : Naturale) :
+    doppio (somma m n) = somma (doppio m) (doppio n) := by
   sorry
 
 end Course.Shared.Lecture07.IT.Exercises

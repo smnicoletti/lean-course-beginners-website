@@ -96,36 +96,60 @@ example (n : Naturale) : somma uno n = succ n := by
 
 end SemplificazioneLocale
 
--- ============================================================
--- VERIFICA DI UN PROGRAMMA SU LISTE
--- ============================================================
-
-inductive Lista (α : Type) where
-  | vuota
-  | cons (testa : α) (coda : Lista α)
-
-open Lista
-
-def mappa {α β : Type} (f : α → β) (xs : Lista α) : Lista β :=
-  match xs with
-  | vuota => vuota
-  | cons x xs => cons (f x) (mappa f xs)
-
-theorem mappa_identita {α : Type} (xs : Lista α) :
-    mappa (fun x => x) xs = xs := by
-  induction xs with
-  | vuota =>
+theorem somma_assoc (a b c : Naturale) :
+    somma (somma a b) c = somma a (somma b c) := by
+  induction c with
+  | zero =>
       rfl
-  | cons x xs ih =>
-      simp [mappa, ih]
+  | succ c ih =>
+      rw [somma_succ_destra]
+      rw [somma_succ_destra]
+      rw [somma_succ_destra]
+      rw [ih]
 
-theorem mappa_composizione
-    {α β γ : Type} (f : α → β) (g : β → γ) (xs : Lista α) :
-    mappa g (mappa f xs) = mappa (fun x => g (f x)) xs := by
-  induction xs with
-  | vuota =>
+theorem zero_somma (n : Naturale) : somma zero n = n := by
+  induction n with
+  | zero =>
       rfl
-  | cons x xs ih =>
-      simp [mappa, ih]
+  | succ n ih =>
+      unfold somma
+      rw [ih]
+
+theorem succ_somma (m n : Naturale) :
+    somma (succ m) n = succ (somma m n) := by
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      unfold somma
+      rw [ih]
+
+theorem somma_comm (a b : Naturale) :
+    somma a b = somma b a := by
+  induction b with
+  | zero =>
+      rw [zero_somma]
+      rfl
+  | succ b ih =>
+      rw [somma_succ_destra]
+      rw [succ_somma]
+      rw [ih]
+
+theorem doppio_succ (n : Naturale) :
+    doppio (succ n) = succ (succ (doppio n)) := by
+  rfl
+
+theorem doppio_somma (m n : Naturale) :
+    doppio (somma m n) = somma (doppio m) (doppio n) := by
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      rw [somma_succ_destra]
+      rw [doppio_succ]
+      rw [doppio_succ]
+      rw [somma_succ_destra]
+      rw [somma_succ_destra]
+      rw [ih]
 
 end Course.Shared.Lecture07.IT.Solutions

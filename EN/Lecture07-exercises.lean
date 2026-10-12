@@ -26,16 +26,17 @@ def double (n : Natural) : Natural :=
   | zero => zero
   | succ n => succ (succ (double n))
 
-def multiply (m n : Natural) : Natural :=
-  match n with
-  | zero => zero
-  | succ n => add m (multiply m n)
+-- 1. Define multiplication of two natural numbers recursively. The definition
+-- should examine its second argument, as `add` does.
+def multiply (m n : Natural) : Natural := by
+  sorry
 
--- Results already obtained in Lecture 6.
+-- A result presented in Lecture 6.
 theorem add_succ_right (m n : Natural) :
     add m (succ n) = succ (add m n) := by
   rfl
 
+-- We also reuse a result proposed in the Lecture 6 exercises.
 theorem add_one_left (n : Natural) : add one n = succ n := by
   induction n with
   | zero =>
@@ -44,27 +45,27 @@ theorem add_one_left (n : Natural) : add one n = succ n := by
       unfold add
       rw [ih]
 
--- 1. Prove the analogous result for two by induction.
+-- 2. Prove the analogous result for two by induction.
 theorem add_two_left (n : Natural) : add two n = succ (succ n) := by
   sorry
 
--- 2. Prove this particular form of associativity. Choose the induction
+-- 3. Prove this particular form of associativity. Choose the induction
 -- variable by looking at the additions that must reduce.
 theorem add_with_one_assoc (m n : Natural) :
     add (add m one) n = add m (add one n) := by
   sorry
 
--- 3. Combine addition and double in an induction proof.
+-- 4. Combine addition and double in an induction proof.
 theorem double_add_one (n : Natural) :
     double (add one n) = add two (double n) := by
   sorry
 
--- 4. Prove by induction that multiplying one by every natural number gives
+-- 5. Prove by induction that multiplying one by every natural number gives
 -- that natural number.
 theorem multiply_one_left (n : Natural) : multiply one n = n := by
   sorry
 
--- 5. Make `add_one_left` available in the simp-set only within this section.
+-- 6. Make `add_one_left` available in the simp-set only within this section.
 -- Then close the goal with `simp`, without naming the lemma.
 section LocalSimplification
 
@@ -73,34 +74,32 @@ example (n : Natural) : add one n = succ n := by
 
 end LocalSimplification
 
--- ============================================================
--- VERIFYING A PROGRAM ON LISTS
--- ============================================================
-
-inductive CustomList (α : Type) where
-  | empty
-  | cons (head : α) (tail : CustomList α)
-
-open CustomList
-
--- 6. Define `mapList`: it should apply `f` to every element while preserving
--- the structure of the list.
--- For example, applying `succ` to `cons zero (cons one empty)` should produce
--- `cons one (cons two empty)`.
-def mapList {α β : Type} (f : α → β) (xs : CustomList α) : CustomList β :=
+-- 7. Prove associativity. Choose the induction variable by checking which
+-- argument is examined by `add`.
+theorem add_assoc (a b c : Natural) :
+    add (add a b) c = add a (add b c) := by
   sorry
 
--- 7. Verify that mapping the identity function does not change a list. Use
--- induction and `simp` with the definition of `mapList`.
-theorem mapList_identity {α : Type} (xs : CustomList α) :
-    mapList (fun x => x) xs = xs := by
+-- These two results handle `zero` and `succ` in the first argument of `add`.
+theorem zero_add (n : Natural) : add zero n = n := by
   sorry
 
--- 8. Verify that two successive map operations are equivalent to one map
--- operation with the composed function. Again use induction and `simp`.
-theorem mapList_composition
-    {α β γ : Type} (f : α → β) (g : β → γ) (xs : CustomList α) :
-    mapList g (mapList f xs) = mapList (fun x => g (f x)) xs := by
+theorem succ_add (m n : Natural) :
+    add (succ m) n = succ (add m n) := by
+  sorry
+
+-- 8. Prove commutativity by combining the available equations for both
+-- arguments of addition.
+theorem add_comm (a b : Natural) : add a b = add b a := by
+  sorry
+
+theorem double_succ (n : Natural) :
+    double (succ n) = succ (succ (double n)) := by
+  rfl
+
+-- 9. Concluding exercise: the double of a sum is the sum of the doubles.
+theorem double_add (m n : Natural) :
+    double (add m n) = add (double m) (double n) := by
   sorry
 
 end Course.Shared.Lecture07.EN.Exercises
