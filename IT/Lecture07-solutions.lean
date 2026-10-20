@@ -1,5 +1,5 @@
 /-!
-# Soluzioni, Lezione 7: induzione, semplificazione e verifica del software
+# Soluzioni, Lezione 7: induzione e semplificazione
 
 Autore: Stefano M. Nicoletti
 Sito web: https://leancourse.stefanonicoletti.com/

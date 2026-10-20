@@ -1,5 +1,5 @@
 /-!
-# Exercises, Lecture 7: Induction, Simplification, and Software Verification
+# Exercises, Lecture 7: Induction and Simplification
 
 Author: Stefano M. Nicoletti
 Website: https://leancourse.stefanonicoletti.com/

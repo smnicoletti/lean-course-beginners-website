@@ -1,5 +1,5 @@
 /-!
-# Lezione 7: Induzione, semplificazione e verifica del software
+# Lezione 7: Induzione e semplificazione
 
 Autore: Stefano M. Nicoletti
 Sito web: https://leancourse.stefanonicoletti.com/

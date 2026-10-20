@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lecture 7: Induction, Simplification, and Software Verification</title>
+<title>Lecture 7: Induction and Simplification</title>
 <style>
 :root {
   color-scheme: light;
@@ -152,7 +152,7 @@ nav a { margin-right: 1rem; color: var(--ink); }
 <main>
 <nav><a href="../index.html">Home</a><a href="index.html">Index</a><a href="Lecture07-book.pdf">Lecture notes PDF</a><a href="Lecture07-classroom.lean">Classroom Lean</a><a href="Lecture07-exercises.lean">Exercises</a><a href="Lecture07-solutions.lean">Solutions</a></nav>
 
-<h1>Lecture 7: Induction, Simplification, and Software Verification</h1>
+<h1>Lecture 7: Induction and Simplification</h1>
 <h2>1. Aim of the lecture</h2>
 <p>We continue from the first induction proof in Lecture 6. We prove further properties of addition, introduce <code>simp</code>, and combine induction, rewriting, and simplification. We then apply the same tools to the verification of a recursive algorithm on lists.</p>
 <h2>2. Definitions and available results</h2>
@@ -272,7 +272,7 @@ nav a { margin-right: 1rem; color: var(--ink); }
 <li>Jeremy Avigad, Leonardo de Moura, Soonho Kong, and Sebastian Ullrich, <em>Theorem Proving in Lean 4</em>, “Tactics”: <a href="https://lean-lang.org/theorem_proving_in_lean4/Tactics/">https://lean-lang.org/theorem_proving_in_lean4/Tactics/</a>.</li>
 <li>David Thrane Christiansen, <em>Functional Programming in Lean</em>, “Datatypes and Patterns”: <a href="https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Datatypes-and-Patterns/">https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Datatypes-and-Patterns/</a>.</li>
 <li>Lean project, <em>The Lean Language Reference</em>, “Recursive Definitions”: <a href="https://lean-lang.org/doc/reference/latest/Definitions/Recursive-Definitions/">https://lean-lang.org/doc/reference/latest/Definitions/Recursive-Definitions/</a>.</li>
-<li>Kevin Buzzard and Jon Eugster, <em>Natural Number Game</em>: <a href="https://adam.math.hhu.de/">https://adam.math.hhu.de/</a>.</li>
+<li>Kevin Buzzard and Jon Eugster, <em>Natural Number Game</em>: <a href="https://github.com/leanprover-community/NNG4">https://github.com/leanprover-community/NNG4</a>.</li>
 <li>Vrije Universiteit Amsterdam, <em>Logical Verification</em>: <a href="https://research.vu.nl/en/courses/logical-verification-5/">https://research.vu.nl/en/courses/logical-verification-5/</a>.</li>
 <li>Marieke Huisman and Anton J. Wijs, <em>Concise Guide to Software Verification: From Model Checking to Annotation Checking</em>: <a href="https://research.utwente.nl/en/publications/concise-guide-to-software-verification-from-model-checking-to-ann/">https://research.utwente.nl/en/publications/concise-guide-to-software-verification-from-model-checking-to-ann/</a>.</li>
 <li>Hana Chockler, Joseph Y. Halpern, and Orna Kupferman, <em>What Causes a System to Satisfy a Specification?</em>: <a href="https://arxiv.org/abs/cs/0312036">https://arxiv.org/abs/cs/0312036</a>.</li>

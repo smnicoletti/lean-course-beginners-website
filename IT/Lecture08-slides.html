@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="it" data-generator="verso-slides">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lezione 8 - Verifica del software, automazione e LLM in Lean</title>
+<style>
+
+:root {
+  --ink: #111827;
+  --muted: #536170;
+  --paper: #f7f9fb;
+  --panel: #ffffff;
+  --lean-blue: #0b5cad;
+  --lean-cyan: #00a6c8;
+  --lean-green: #13a05f;
+  --line: #d8e0e8;
+  --code: #f4f7fb;
+  --shadow: rgba(15, 23, 42, .12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, var(--lean-blue) 0 10px, transparent 10px),
+    radial-gradient(circle at 90% 10%, rgba(0,166,200,.10), transparent 32rem),
+    var(--paper);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+a { color: var(--lean-blue); font-weight: 650; }
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+section.slide {
+  position: relative;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6vh 8vw 7vh calc(8vw + 10px);
+  border-bottom: 1px solid var(--line);
+}
+section.slide.title {
+  background:
+    linear-gradient(135deg, rgba(11,92,173,.96), rgba(0,166,200,.88)),
+    var(--lean-blue);
+  color: white;
+}
+section.slide.title h1,
+section.slide.title h2 { color: white; max-width: 980px; }
+section.slide.title .kicker,
+section.slide.title .note { color: rgba(255,255,255,.84); }
+section.slide:not(.title)::before {
+  content: "Lean 4";
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  color: var(--lean-blue);
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+h1, h2, h3 {
+  margin: 0 0 .45rem;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+h1, h2 {
+  max-width: 1120px;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  color: var(--lean-blue);
+}
+h3 { font-size: clamp(1.35rem, 2vw, 2.1rem); }
+p, li, td, th { font-size: clamp(1.18rem, 1.7vw, 1.7rem); }
+p { max-width: 1060px; margin: .25rem 0; }
+ul { max-width: 1080px; padding-left: 1.2em; margin: .35rem 0; }
+li { margin: .35rem 0; }
+table {
+  border-collapse: collapse;
+  max-width: 1120px;
+  background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+th, td {
+  border-bottom: 1px solid var(--line);
+  padding: .7rem .9rem;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--lean-blue);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  text-transform: uppercase;
+}
+pre, .hl.lean {
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--lean-blue);
+  border-radius: 7px;
+  padding: .9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: clamp(.78rem, 1vw, 1.02rem);
+  box-shadow: 0 10px 22px rgba(15,23,42,.08);
+}
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+blockquote {
+  max-width: 980px;
+  border-left: 7px solid var(--lean-cyan);
+  margin: .6rem 0;
+  padding: .65rem 0 .65rem 1.2rem;
+  background: rgba(255,255,255,.7);
+}
+.kicker {
+  color: var(--lean-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: clamp(.9rem, 1.1vw, 1.1rem);
+}
+.note, .source { color: var(--muted); font-size: clamp(.88rem, 1.05vw, 1rem); }
+.counter {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1rem;
+  color: var(--muted);
+  font-size: .9rem;
+  z-index: 5;
+}
+.lean-rendered {
+  max-width: 1160px;
+}
+.lean-rendered .hl.lean {
+  display: block;
+  white-space: pre-wrap;
+}
+.tactic-toggle { margin-left: .35rem; }
+.tactic label {
+  cursor: pointer;
+  border-bottom: 2px solid var(--lean-green);
+}
+.tactic-state {
+  display: none;
+  white-space: normal;
+  margin: .7rem 0 0;
+  padding: .8rem;
+  background: var(--panel);
+  border: 1px solid var(--lean-green);
+  border-radius: 7px;
+  box-shadow: 0 8px 20px rgba(15,23,42,.10);
+}
+.tactic-toggle:checked + .tactic-state { display: block; }
+.goal + .goal {
+  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .5rem;
+}
+.hypotheses {
+  display: block;
+  margin-bottom: .4rem;
+}
+.hypothesis { display: block; }
+.conclusion {
+  display: block;
+  font-weight: 700;
+}
+.token.keyword { color: #7c3aed; font-weight: 700; }
+.token.const { color: var(--lean-blue); }
+.token.var { color: #2563eb; }
+.token.sort { color: #b45309; }
+@media (max-width: 720px) {
+  section.slide { padding: 5vh 5vw 7vh calc(5vw + 10px); }
+  section.slide:not(.title)::before { display: none; }
+  h1, h2 { font-size: clamp(1.8rem, 10vw, 3rem); }
+}
+@media print {
+  main { height: auto; overflow: visible; scroll-snap-type: none; }
+  section.slide { min-height: auto; break-inside: avoid; }
+  .counter { display: none; }
+}
+
+</style>
+</head>
+<body class="verso-slides">
+<main>
+<section class="slide title" id="1-reasoning-proof-and-formalization-with-lean-4">
+<h2>Reasoning, Proof, and Formalization with Lean 4</h2>
+<p>Lezione 8 - Verifica del software, automazione e LLM in Lean</p>
+<p>Stefano M. Nicoletti</p>
+</section>
+<section class="slide content" id="2-struttura-della-lezione">
+<h2>Struttura della lezione</h2>
+<ul><li>Esploriamo suggerimenti e forme di automazione in Lean.</li><li>Riprendiamo le liste, introdotte brevemente nella Lezione 7 come tipo induttivo.</li><li>Definiamo concatenazione e rovesciamento.</li><li>Formuliamo e dimostriamo proprietà dell&#x27;algoritmo.</li><li>Proseguiamo con <code>decide</code> e <code>omega</code>.</li><li>Introduciamo un uso controllato degli LLM come assistenti per Lean.</li></ul>
+</section>
+<section class="slide content" id="3-chiedere-un-suggerimento-a-lean">
+<h2>Chiedere un suggerimento a Lean</h2>
+<ul><li><code>exact?</code>: cerca un termine che chiuda il goal.</li><li><code>apply?</code>: cerca un&#x27;applicazione, eventualmente lasciando premesse da dimostrare.</li><li><code>simp?</code>: mostra quali regole bastano per la semplificazione.</li><li><code>grind?</code>: mostra come ripetere una ricerca che combina più forme di ragionamento.</li></ul>
+<p>Leggiamo «Try this» nell&#x27;Infoview.</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/Tactic-Proofs/Tactic-Reference/">Lean Reference, Tactic Reference</a></p>
+</section>
+<section class="slide content" id="4-exact-ritrovare-un-risultato">
+<h2>exact?: ritrovare un risultato</h2>
+<p>Vogliamo dimostrare <code>a &lt; c</code>, date <code>hAB : a &lt; b</code> e <code>hBC : b &lt; c</code>, con <code>a b c : Nat</code>.</p>
+<p>Proviamo <code>exact?</code>. Nel nostro ambiente propone:</p>
+<p><code>exact Nat.lt_trans hAB hBC</code></p>
+<p>Cerca dichiarazioni disponibili e prova a risolverne le premesse. Non esplora concatenazioni arbitrariamente lunghe di applicazioni. Può quindi non trovare una dimostrazione anche quando il goal è vero.</p>
+<p class="source"><a href="https://github.com/leanprover/lean4/blob/v4.29.1/src/Init/Tactics.lean">Lean 4.29.1, documentazione di exact? e apply?</a></p>
+</section>
+<section class="slide content" id="5-apply-applicare-e-continuare">
+<h2>apply?: applicare e continuare</h2>
+<p>Vogliamo <code>P ∧ R</code>, date <code>hP : P</code>, <code>hQ : Q</code> e <code>hQR : Q → R</code>.</p>
+<p>Proviamo <code>apply?</code>. Qui trova anche come dimostrare le due parti e chiude il goal.</p>
+<p>La differenza riguarda ciò che la ricerca deve ottenere: <code>exact?</code> cerca una soluzione completa, <code>apply?</code> può proporre un&#x27;applicazione con premesse ancora aperte.</p>
+<p>Dopo il suggerimento controlliamo sempre il numero e il tipo dei goal rimasti.</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/Tactic-Proofs/Tactic-Reference/">Lean Reference, Library Search</a></p>
+</section>
+<section class="slide content" id="6-simp-semplificare-un-espressione-composta">
+<h2>simp?: semplificare un&#x27;espressione composta</h2>
+<p>Vogliamo dimostrare <code>P ∧ (Q ∨ R)</code>, date le assunzioni <code>hP : P</code> e <code>hQ : Q</code>:</p>
+<p><code>example (P Q R : Prop) (hP : P) (hQ : Q) : P ∧ (Q ∨ R)</code></p>
+<p>Proviamo <code>simp? [hP, hQ]</code>.</p>
+<p>Le assunzioni dicono che <code>P</code> e <code>Q</code> sono vere. La disgiunzione <code>Q ∨ R</code> è quindi vera, e così la congiunzione con <code>P</code>.</p>
+<p>Il suggerimento indica regole sufficienti per questa semplificazione.</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/The-Simplifier/">Lean Reference, The Simplifier</a></p>
+</section>
+<section class="slide content" id="7-grind-combinare-assunzioni-logiche">
+<h2>grind?: combinare assunzioni logiche</h2>
+<p><code>simp</code> semplifica le espressioni mediante riscritture. <code>grind</code> prova anche a combinare i fatti disponibili: ricava conseguenze dalle assunzioni, distingue casi e cerca contraddizioni. I due strumenti possono risolvere alcuni degli stessi goal, ma organizzano la ricerca in modo diverso.</p>
+<p>Vogliamo dimostrare <code>Q</code>, date:</p>
+<p><code>hPQ : P ∨ Q</code>, <code>hPR : P → R</code>, <code>hNotR : ¬R</code>.</p>
+<p>Proviamo <code>grind?</code>. Se vale <code>P</code>, otteniamo <code>R</code>, in contraddizione con <code>¬R</code>. Rimane il caso <code>Q</code>.</p>
+<p>Qui <code>grind?</code> propone <code>grind only</code>: le tre assunzioni bastano, senza aggiungere teoremi della libreria.</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/The--grind--tactic/">Lean Reference, The grind tactic</a></p>
+</section>
+<section class="slide content" id="8-come-lavora-grind">
+<h2>Come lavora grind?</h2>
+<ul><li>Registra fatti e uguaglianze e ne ricava conseguenze.</li><li>Usa la congruenza: da <code>a = b</code> segue <code>f a = f b</code>.</li><li>Istanzia regole universali sui termini incontrati e può distinguere casi.</li><li>Fa cooperare questi passi con solver specializzati, per esempio aritmetici.</li></ul>
+<p>La ricerca è ispirata ai solver SMT, strumenti che combinano logica e teorie come l&#x27;aritmetica. Se fallisce, il goal non è per questo falso.</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/The--grind--tactic/">Lean Reference, The grind tactic</a></p>
+</section>
+<section class="slide content" id="9-torniamo-al-software-test-e-verifica-formale">
+<h2>Torniamo al software: test e verifica formale</h2>
+<p>Un test esegue il programma su input scelti e confronta il risultato con quello atteso.</p>
+<ul><li>Un test che fallisce mostra un errore concreto.</li><li>Un insieme di test superati non copre automaticamente tutti gli input.</li><li>Una verifica formale enuncia una proprietà e la dimostra per ogni input compreso nell&#x27;enunciato.</li></ul>
+<p>Test e verifica formale possono affiancarsi, ma forniscono garanzie diverse.</p>
+</section>
+<section class="slide content" id="10-un-tipo-induttivo-per-le-liste">
+<h2>Un tipo induttivo per le liste</h2>
+<p>Una lista di elementi di tipo <code>α</code> può essere costruita in due modi:</p>
+<ul><li><code>vuota</code>: la lista senza elementi.</li><li><code>cons x xs</code>: un elemento <code>x</code> seguito da una lista <code>xs</code>.</li></ul>
+<p><code>inductive Lista (α : Type) where</code></p>
+<p><code>| vuota</code></p>
+<p><code>| cons (testa : α) (coda : Lista α)</code></p>
+<p>Il parametro <code>α</code> rappresenta il tipo degli elementi. La stessa definizione costruisce liste di naturali, stringhe o altri tipi. Questo riuso della stessa struttura per tipi diversi si chiama <strong>polimorfismo parametrico</strong>.</p>
+</section>
+<section class="slide content" id="11-costruire-una-lista">
+<h2>Costruire una lista</h2>
+<p>Con i costruttori possiamo rappresentare, per esempio, la lista che contiene <code>zero</code>, <code>uno</code> e <code>due</code>:</p>
+<p><code>cons zero (cons uno (cons due vuota))</code></p>
+<p>La struttura esplicita una <strong>testa</strong> e una <strong>coda</strong>:</p>
+<ul><li>la testa è il primo elemento.</li><li>la coda è una lista più piccola.</li><li>la ricorsione e l&#x27;induzione possono procedere sulla coda.</li></ul>
+</section>
+<section class="slide content" id="12-concatenare-due-liste">
+<h2>Concatenare due liste</h2>
+<p>Nel file Lean scriviamo il parametro <code>α : Type</code> tra parentesi graffe. Le graffe indicano che è implicito: Lean ricava <code>α</code> dai tipi di <code>xs</code> e <code>ys</code>.</p>
+<p>Per un tipo <code>α</code>, definiamo:</p>
+<p><code>def concatena (xs ys : Lista α) : Lista α :=</code></p>
+<p><code>match xs with</code></p>
+<p><code>| vuota =&gt; ys</code></p>
+<p><code>| cons x xs =&gt; cons x (concatena xs ys)</code></p>
+<p>La funzione analizza la prima lista. Se non è vuota, conserva la testa e concatena ricorsivamente la coda con <code>ys</code>.</p>
+</section>
+<section class="slide content" id="13-il-parametro-implicito-nei-teoremi">
+<h2>Il parametro implicito nei teoremi</h2>
+<p>Anche un teorema può dichiarare <code>{α : Type} (xs : Lista α)</code>.</p>
+<ul><li>Il risultato vale per ogni tipo di elementi <code>α</code> e per ogni lista <code>xs</code> di quel tipo.</li><li>Le graffe rendono <code>α</code> implicito. Usando il teorema su <code>xs</code>, Lean ricava il tipo degli elementi dal tipo della lista.</li><li>Se <code>xs : Lista String</code>, il tipo ricavato è <code>String</code>. Passiamo la lista, senza dover scrivere anche il tipo.</li></ul>
+</section>
+<section class="slide content" id="14-esempio-concatenare-due-liste">
+<h2>Esempio: concatenare due liste</h2>
+<p>Per leggere più facilmente l&#x27;esempio, rappresentiamo le liste tra parentesi quadre:</p>
+<p><code>xs = [zero, uno]</code></p>
+<p><code>ys = [due]</code></p>
+<p>La definizione attraversa <code>xs</code> da sinistra a destra:</p>
+<p><code>concatena [zero, uno] [due]</code></p>
+<p><code>= zero :: (concatena [uno] [due])</code></p>
+<p><code>= zero :: (uno :: (<span style="color: #0b5fb8; font-weight: 700;">concatena [] [due]</span>))</code></p>
+<p><code>= zero :: (uno :: [due])</code></p>
+<p><code>= [zero, uno, due]</code></p>
+<p>Qui <code>[]</code> rappresenta la lista vuota e <code>x :: xs</code> rappresenta <code>cons x xs</code>.</p>
+</section>
+<section class="slide content" id="15-un-algoritmo-per-rovesciare-una-lista">
+<h2>Un algoritmo per rovesciare una lista</h2>
+<p>Nel caso vuoto il risultato è ancora vuoto. Nel caso <code>cons</code>, rovesciamo la coda e collochiamo la testa in fondo:</p>
+<p>Per un tipo <code>α</code>, definiamo:</p>
+<p><code>def rovescia (xs : Lista α) : Lista α :=</code></p>
+<p><code>match xs with</code></p>
+<p><code>| vuota =&gt; vuota</code></p>
+<p><code>| cons x xs =&gt;</code></p>
+<p><code>    concatena (rovescia xs) (cons x vuota)</code></p>
+<p>La chiamata ricorsiva usa la coda <code>xs</code>, che contiene un costruttore <code>cons</code> in meno.</p>
+</section>
+<section class="slide content" id="16-esempio-rovesciare-una-lista">
+<h2>Esempio: rovesciare una lista</h2>
+<p>Usiamo la notazione illustrativa con parentesi quadre:</p>
+<p><code>rovescia [zero, uno]</code></p>
+<p><code>= concatena (rovescia [uno]) [zero]</code></p>
+<p><code>= concatena (concatena (<span style="color: #0b5fb8; font-weight: 700;">rovescia []</span>) [uno]) [zero]</code></p>
+<p><code>= concatena (concatena [] [uno]) [zero]</code></p>
+<p><code>= concatena [uno] [zero]</code></p>
+<p><code>= [uno, zero]</code></p>
+<p>La funzione rovescia prima la coda <code>[uno]</code>, poi colloca <code>zero</code> in fondo.</p>
+</section>
+<section class="slide content" id="17-quale-propriet-vogliamo-verificare">
+<h2>Quale proprietà vogliamo verificare?</h2>
+<p>Una proprietà fondamentale è che rovesciare due volte restituisca la lista iniziale:</p>
+<p>Per ogni tipo <code>α</code> e ogni <code>xs : Lista α</code>:</p>
+<p><code>rovescia (rovescia xs) = xs</code>.</p>
+<p>Non verifichiamo soltanto una lista concreta. Il quantificatore implicito su <code>xs</code> richiede che la proprietà valga per ogni <code>Lista α</code>.</p>
+<p>Questa è una proprietà di correttezza importante, tuttavia, non è una specifica completa di ogni aspetto dell&#x27;algoritmo.</p>
+</section>
+<section class="slide content" id="18-propriet-verificata-e-specifica-completa">
+<h2>Proprietà verificata e specifica completa</h2>
+<p>Una <strong>proprietà verificata</strong> stabilisce un fatto sul programma. Una <strong>specifica completa</strong> dovrebbe descrivere abbastanza precisamente il comportamento atteso da escludere implementazioni scorrette.</p>
+<p>L&#x27;equazione</p>
+<p><code>rovescia (rovescia xs) = xs</code></p>
+<p>non basta da sola. Anche la funzione identità, che restituisce sempre <code>xs</code> senza rovesciarla, soddisfa la stessa equazione.</p>
+<p>Per caratterizzare meglio <code>rovescia</code> servono altre proprietà, per esempio:</p>
+<p><code>rovescia (concatena xs ys) =</code></p>
+<p><code>concatena (rovescia ys) (rovescia xs)</code>.</p>
+</section>
+<section class="slide content" id="19-lemmi-utili-per-la-propriet-finale">
+<h2>Lemmi utili per la proprietà finale</h2>
+<p>Prima di dimostrare <code>rovescia (rovescia xs) = xs</code>, dimostriamo alcuni lemmi che ci saranno utili:</p>
+<ul><li><code>concatena xs vuota = xs</code>.</li><li><code>concatena (concatena xs ys) zs = concatena xs (concatena ys zs)</code>.</li><li><code>rovescia (concatena xs ys) = concatena (rovescia ys) (rovescia xs)</code>.</li></ul>
+</section>
+<section class="slide content" id="20-verificare-rovescia">
+<h2>Verificare rovescia</h2>
+<p>Per dimostrare <code>rovescia (rovescia xs) = xs</code> facciamo induzione su <code>xs</code> e impieghiamo l&#x27;automazione con <code>simp</code> vista poco fa.</p>
+</section>
+<section class="slide content" id="21-che-cosa-abbiamo-verificato">
+<h2>Che cosa abbiamo verificato?</h2>
+<p>Abbiamo collegato tre livelli:</p>
+<ul><li><strong>struttura dei dati</strong>: i costruttori <code>vuota</code> e <code>cons</code>.</li><li><strong>programma</strong>: le definizioni ricorsive <code>concatena</code> e <code>rovescia</code>.</li><li><strong>proprietà di correttezza</strong>: proposizioni dimostrate per ogni input.</li></ul>
+<p>In Lean programmi e dimostrazioni convivono nello stesso linguaggio, e il kernel controlla entrambi.</p>
+</section>
+<section class="slide content" id="22-decide-verificare-mediante-un-calcolo">
+<h2>decide: verificare mediante un calcolo</h2>
+<p>Da qui usiamo <code>Nat</code>, <code>Int</code> e <code>List</code> della libreria standard. <code>[2, 4]</code> è una lista standard, <code>++</code> la concatena con un&#x27;altra lista.</p>
+<p>Vogliamo:</p>
+<p><code>([2, 4] ++ [6] : List Nat) = [2, 4, 6] ∧ (7 : Nat) &lt; 10</code></p>
+<p><code>decide</code> prova a verificare l&#x27;enunciato mediante un calcolo. Qui calcola la concatenazione, confronta le liste e verifica che <code>7 &lt; 10</code>. Poiché entrambi i controlli danno esito positivo, chiude il goal.</p>
+<p>Qui tutti i dati sono concreti. Non stiamo dimostrando una proprietà di ogni lista.</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/Tactic-Proofs/Tactic-Reference/">Lean Reference, Decision Procedures</a></p>
+</section>
+<section class="slide content" id="23-omega-ragionare-sulle-et">
+<h2>omega: ragionare sulle età</h2>
+<p>Eva ha almeno 18 anni e Marta ha tre anni più di Eva. Vogliamo dimostrare che Marta ha almeno 21 anni.</p>
+<p><code>hDifferenza : etaEva + 3 = etaMarta</code></p>
+<p><code>hEta : 18 ≤ etaEva</code></p>
+<p>Goal: <code>21 ≤ etaMarta</code>. Proviamo <code>omega</code>.</p>
+<p>È specializzato nell&#x27;aritmetica lineare su <code>Nat</code> e <code>Int</code> (ovvero, uguaglianze e disuguaglianze con somme e prodotti per costanti, senza prodotti fra due variabili).</p>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/Tactic-Proofs/Tactic-Reference/">Lean Reference, omega</a></p>
+</section>
+<section class="slide content" id="24-quale-automazione-scegliere">
+<h2>Quale automazione scegliere?</h2>
+<ul><li>Un risultato già disponibile: <code>exact?</code> o <code>apply?</code>.</li><li>Un&#x27;espressione da semplificare: <code>simp?</code>, poi <code>simp</code>.</li><li>Fatti logici, uguaglianze e regole da combinare: <code>grind?</code>, poi <code>grind</code>.</li><li>Una proposizione decidibile con dati concreti: <code>decide</code>.</li><li>Vincoli aritmetici lineari con variabili: <code>omega</code>.</li></ul>
+<p>I campi d&#x27;uso si sovrappongono. Nelle dimostrazioni sulle liste abbiamo scelto noi l&#x27;induzione e i lemmi necessari, usando l&#x27;automazione per i singoli passi.</p>
+</section>
+<section class="slide content" id="25-codex-in-vs-code-preparazione">
+<h2>Codex in VS Code: preparazione</h2>
+<p>Usiamo l&#x27;estensione ufficiale Codex per lavorare accanto al file Lean, su Windows, macOS o Linux.</p>
+<ul><li>Apriamo il progetto del corso in VS Code.</li><li>Controlliamo che Lean e l&#x27;Infoview funzionino.</li><li>Serve un account ChatGPT con accesso a Codex. Disponibilità e limiti dipendono dall&#x27;account.</li></ul>
+<p>Codex propone spiegazioni e codice. Lean controlla le dimostrazioni.</p>
+</section>
+<section class="slide content" id="26-1-installare-l-estensione">
+<h2>1. Installare l&#x27;estensione</h2>
+<p>Apriamo <strong>Extensions / Estensioni</strong> in VS Code:</p>
+<p><code>Ctrl+Shift+X</code> su Windows e Linux, <code>Cmd+Shift+X</code> su macOS.</p>
+<ul><li>Cerchiamo <code>@id:OpenAI.chatgpt</code>.</li><li>Verifichiamo il nome <strong>Codex</strong> e il publisher <strong>OpenAI</strong>.</li><li>Premi <strong>Install / Installa</strong>. Ricarica la finestra se richiesto.</li></ul>
+<p class="source"><a href="https://marketplace.visualstudio.com/items?itemName=OpenAI.chatgpt">Estensione ufficiale Codex</a></p>
+</section>
+<section class="slide content" id="27-2-aprire-il-pannello-codex">
+<h2>2. Aprire il pannello Codex</h2>
+<p>Premi l&#x27;icona Codex nella barra laterale.</p>
+<p>Se non compare, apri la <strong>Command Palette</strong>:</p>
+<p><code>Ctrl+Shift+P</code> su Windows e Linux, <code>Cmd+Shift+P</code> su macOS.</p>
+<p>Cerca ed esegui <strong>Codex: Open Codex Sidebar</strong>.</p>
+<p>Per questa attività basta l&#x27;estensione, senza installare anche l&#x27;app desktop o la CLI di Codex.</p>
+<p class="source"><a href="https://learn.chatgpt.com/docs/codex/ide">OpenAI: Codex IDE extension</a></p>
+</section>
+<section class="slide content" id="28-3-accedere-con-chatgpt">
+<h2>3. Accedere con ChatGPT</h2>
+<ul><li>Nel pannello scegli <strong>Sign in with ChatGPT</strong>.</li><li>Nel browser completa l&#x27;accesso con il tuo account ChatGPT.</li><li>Torna a VS Code. Se richiesto, consenti al browser di riaprire l&#x27;editor.</li><li>Verifica che sia disponibile il campo per iniziare una conversazione.</li></ul>
+<p class="source"><a href="https://learn.chatgpt.com/docs/auth">OpenAI: Authentication</a></p>
+</section>
+<section class="slide content" id="29-4-sistema-operativo-e-permessi">
+<h2>4. Sistema operativo e permessi</h2>
+<p>Su macOS e Linux usiamo la finestra in cui il progetto Lean funziona già.</p>
+<p>Anche su Windows possiamo usare Codex direttamente in VS Code dopo l&#x27;installazione dell&#x27;estensione e l&#x27;accesso.</p>
+<p class="source"><a href="https://learn.chatgpt.com/docs/windows/windows-sandbox">OpenAI: Windows sandbox</a></p>
+</section>
+<section class="slide content" id="30-5-iniziare-dal-file-lean">
+<h2>5. Iniziare dal file Lean</h2>
+<p>Salviamo il file e includiamo nella conversazione l&#x27;enunciato su cui vogliamo lavorare, controllando il contesto mostrato da Codex.</p>
+<p>«Spiega questo enunciato e il ruolo dei suoi parametri. Usa soltanto i concetti già presenti nel file. Per ora non modificare file e non eseguire comandi.»</p>
+<p>Leggiamo la risposta confrontandola con il codice. Quando chiediamo modifiche, esaminiamo le differenze e controlliamo il risultato con Lean.</p>
+</section>
+<section class="slide content" id="31-chiedere-una-dimostrazione-a-un-llm">
+<h2>Chiedere una dimostrazione a un LLM</h2>
+<p>Vogliamo verificare che due liste con lo stesso rovesciamento siano uguali.</p>
+<p><code>xs ys : Lista α</code></p>
+<p><code>h : rovescia xs = rovescia ys</code></p>
+<p><code>⊢ xs = ys</code></p>
+</section>
+<section class="slide content" id="32-la-richiesta-all-assistente">
+<h2>La richiesta all&#x27;assistente</h2>
+<p>«Spiega prima una strategia per questo enunciato. Mantieni definizioni, assunzioni e conclusione. Usa i lemmi già presenti. Non aggiungere assiomi, <code>sorry</code> o <code>admit</code>. Poi proponi una dimostrazione per passi e controllala con Lean.»</p>
+<ul><li>Leggiamo la strategia prima del codice.</li><li>Confrontiamo ogni nuovo goal con quello iniziale.</li><li>Se Lean segnala un errore, forniamo all&#x27;assistente il messaggio e il goal effettivo.</li></ul>
+</section>
+<section class="slide content" id="33-quando-consideriamo-conclusa-l-attivit">
+<h2>Quando consideriamo conclusa l&#x27;attività?</h2>
+<ul><li>L&#x27;enunciato e le definizioni sono rimasti quelli concordati.</li><li>Comprendiamo i passaggi della dimostrazione.</li><li>Lean accetta il file senza goal aperti o segnaposto.</li><li><code>#print axioms lecture08_rovescia_iniettiva</code> mostra le dipendenze assiomatiche della dimostrazione.</li></ul>
+<p>Non deve comparire <code>sorryAx</code>, che segnala una dimostrazione incompleta. Gli assiomi standard vanno distinti da nuove assunzioni introdotte per evitare la dimostrazione.</p>
+<p>Qui compare <code>propext</code>: è il principio che permette di considerare uguali due proposizioni logicamente equivalenti. Lo ereditiamo dai lemmi dimostrati con <code>simp</code>, che lo usa, per esempio, per sostituire <code>t = t</code> con <code>True</code>, non per assumere il risultato che vogliamo dimostrare.</p>
+<p>Il controllo di Lean riguarda l&#x27;enunciato scritto, che dobbiamo confrontare con la proprietà desiderata.</p>
+<p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/">Theorem Proving in Lean 4, Axioms and Computation</a></p>
+</section>
+<section class="slide content" id="34-fonti">
+<h2>Fonti</h2>
+<p class="source"><a href="https://lean-lang.org/doc/reference/latest/Tactic-Proofs/Tactic-Reference/">Lean Reference, automazione: Tactic Reference</a></p>
+    <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Inductive-Types/">Avigad, de Moura, Kong e Ullrich, Theorem Proving in Lean 4, Inductive Types</a></p>
+    <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Induction-and-Recursion/">Avigad, de Moura, Kong e Ullrich, Theorem Proving in Lean 4, Induction and Recursion</a></p>
+    <p class="source"><a href="https://lean-lang.org/theorem_proving_in_lean4/Tactics/">Avigad, de Moura, Kong e Ullrich, Theorem Proving in Lean 4, Tactics</a></p>
+    <p class="source"><a href="https://lean-lang.org/functional_programming_in_lean/Getting-to-Know-Lean/Datatypes-and-Patterns/">Christiansen, Functional Programming in Lean, Datatypes and Patterns</a></p>
+    <p class="source"><a href="https://lean-lang.org/doc/reference/latest/Definitions/Recursive-Definitions/">Lean project, The Lean Language Reference, Recursive Definitions</a></p>
+    <p class="source"><a href="https://github.com/leanprover-community/NNG4">Buzzard e Eugster, Natural Number Game</a></p>
+    <p class="source"><a href="https://research.vu.nl/en/courses/logical-verification-5/">VU Amsterdam, Logical Verification</a></p>
+    <p class="source"><a href="https://research.utwente.nl/en/publications/concise-guide-to-software-verification-from-model-checking-to-ann/">Huisman e Wijs, Concise Guide to Software Verification: From Model Checking to Annotation Checking</a></p>
+    <p class="source"><a href="https://arxiv.org/abs/cs/0312036">Chockler, Halpern e Kupferman, What Causes a System to Satisfy a Specification?</a></p>
+</section>
+</main>
+<div class="counter"></div>
+<script>
+
+const slides = Array.from(document.querySelectorAll("section.slide"));
+const counter = document.querySelector(".counter");
+const scroller = document.querySelector("main");
+
+function activeIndex() {
+  const y = scroller.scrollTop;
+  let best = 0;
+  let bestDist = Infinity;
+  slides.forEach((slide, i) => {
+    const distance = Math.abs(slide.offsetTop - y);
+    if (distance < bestDist) {
+      best = i;
+      bestDist = distance;
+    }
+  });
+  return best;
+}
+
+function updateCounter() {
+  if (counter) counter.textContent = `${activeIndex() + 1} / ${slides.length}`;
+}
+
+function go(delta) {
+  const index = Math.max(0, Math.min(slides.length - 1, activeIndex() + delta));
+  slides[index].scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+    event.preventDefault();
+    go(1);
+  } else if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    go(-1);
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    slides[0].scrollIntoView({ behavior: "smooth" });
+  } else if (event.key === "End") {
+    event.preventDefault();
+    slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+scroller.addEventListener("scroll", updateCounter);
+updateCounter();
+
+</script>
+</body>
+</html>
