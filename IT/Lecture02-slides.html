@@ -142,28 +142,6 @@ blockquote {
   display: block;
   white-space: pre-wrap;
 }
-.lean-rendered .has-info { position: relative; }
-.lean-rendered .hover-container {
-  display: none;
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + .4rem);
-  left: 0;
-  width: max-content;
-  max-width: min(42rem, calc(100vw - 3rem));
-}
-.lean-rendered .has-info:hover > .hover-container,
-.lean-rendered .has-info:focus-within > .hover-container { display: block; }
-.lean-rendered .hover-info.messages {
-  display: block;
-  padding: .7rem .85rem;
-  border: 1px solid var(--lean-green);
-  border-radius: 7px;
-  background: var(--panel);
-  box-shadow: 0 8px 20px rgba(15,23,42,.16);
-  white-space: pre-wrap;
-}
-.lean-rendered .verso-message { display: block; }
 .tactic-toggle { margin-left: .35rem; }
 .tactic label {
   cursor: pointer;
